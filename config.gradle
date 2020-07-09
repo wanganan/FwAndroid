@@ -20,6 +20,7 @@ ext {
             rxAndroid       : "3.0.0",
             rxLifecycle     : "4.0.0",
             logger          : "2.2.0",
+            autosize        : "1.2.1"
     ]
 
     dependencies = [
@@ -62,7 +63,9 @@ ext {
             "rxlifecycle-kotlin"      :
                     "com.trello.rxlifecycle4:rxlifecycle-kotlin:${depsVersion.rxLifecycle}",
             "logger"                  :
-                    "com.orhanobut:logger:${depsVersion.logger}"
+                    "com.orhanobut:logger:${depsVersion.logger}",
+            "autosize"                :
+                    "me.jessyan:autosize:${depsVersion.autosize}"
     ]
 
     // api 测试

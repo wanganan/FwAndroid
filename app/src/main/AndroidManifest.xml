@@ -26,6 +26,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--AndroidAutoSize屏幕适配-->
+        <!--全局设计图尺寸 (单位 dp)，如果使用副单位 (pt、in、mm)，则可以直接填写像素尺寸，不需要再将像素转化为 dp-->
+        <!-- 用mm副单位开发，这里配置和设计稿一样的尺寸px ， 1920 x 1080px -->
+        <!--选择什么单位就在 layout 文件中用什么单位进行布局-->
+        <meta-data
+            android:name="design_width_in_dp"
+            android:value="1000"/>
+        <meta-data
+            android:name="design_height_in_dp"
+            android:value="1920"/>
     </application>
 
 </manifest>
