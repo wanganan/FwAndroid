@@ -1,0 +1,179 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <!--App Style-->
+    <!-- app启动白屏 -->
+    <style name="AppSplash" parent="android:Theme">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!-- dialog动画 -->
+    <style name="dialog_style" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/push_up_in</item>
+        <!--<item name="android:windowExitAnimation">@anim/slide_down_out</item>-->
+    </style>
+
+    <style name="logo_dialog" parent="@android:style/Theme.Holo.Light.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.6</item>
+    </style>
+
+    <style name="pull_refresh_list_style" parent="list_style"></style>
+
+    <style name="list_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:cacheColorHint">#00000000</item>//设置背景透明
+        <item name="android:divider">#19000000</item>
+        <item name="android:dividerHeight">0dp</item>
+        <item name="android:fadingEdge">none</item>// 设置上边和下边没有黑色的阴影
+        <item name="android:fastScrollEnabled">false</item>//是不是允许快速滑动
+        <item name="android:footerDividersEnabled">false</item>//不显示底部分割线
+        <item name="android:headerDividersEnabled">false</item>//不显示头部分割线
+        <item name="android:smoothScrollbar">true</item>//显示变化滚动条高度
+    </style>
+
+    <style name="btn_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">5dp</item>
+    </style>
+
+    <style name="btn_big" parent="btn_style">
+        <item name="android:textSize">25sp</item>
+    </style>
+
+    <style name="btn_title1" parent="btn_style">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="btn_title2" parent="btn_style">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="btn_normal" parent="btn_style">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="btn_title4" parent="btn_style">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="btn_title5" parent="btn_style">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="text_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <!--<item name="android:padding">@dimen/x1</item>-->
+        <item name="android:textColor">@color/normal</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="text_super_big" parent="text_style">
+        <item name="android:textSize">35sp</item>
+    </style>
+
+    <style name="text_big" parent="text_style">
+        <item name="android:textSize">25sp</item>
+    </style>
+
+    <style name="text_title1" parent="text_style">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="text_title2" parent="text_style">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="text_normal" parent="text_style">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="text_title4" parent="text_style">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="text_title5" parent="text_style">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="edit_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:background">@null</item>
+    </style>
+
+    <style name="edit_search" parent="edit_style">
+        <item name="android:singleLine">true</item>
+        <item name="android:inputType">number</item>
+        <item name="android:imeOptions">actionSearch</item>
+    </style>
+
+    <style name="separate_line">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0.5dp</item>
+        <item name="android:background">@android:color/darker_gray</item>
+    </style>
+
+    <style name="separate_line_bold">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@android:color/black</item>
+    </style>
+
+    <style name="separate_line_vertical">
+        <item name="android:layout_width">1dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@android:color/black</item>
+    </style>
+
+    <style name="grid_3_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:verticalSpacing">10dp</item>
+        <item name="android:horizontalSpacing">10dp</item>
+        <item name="android:background">#fff</item>
+        <item name="android:numColumns">3</item>
+        <item name="android:collapseColumns">2</item>
+        <item name="android:scrollbars">none</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="img_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:src">@mipmap/ic_launcher</item>
+    </style>
+
+    <style name="radio_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="AnimationPreview">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
+</resources>

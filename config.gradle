@@ -1,0 +1,77 @@
+//Android Studio统一管理依赖版本号引用配置
+ext {
+    android = [
+            compileSdkVersion: 29,
+            buildToolsVersion: "29.0.3",
+            applicationId    : "com.oplus.fwandroid",
+            minSdkVersion    : 16,
+            targetSdkVersion : 29,
+            versionCode      : 1,
+            versionName      : "1.0"
+    ]
+
+    depsVersion = [
+            constraintLayout: "1.1.3",
+            smartRefresh    : "2.0.1",
+            adapterHelper   : "3.0.4",
+            retrofit        : "2.9.0",
+            okHttp          : "4.7.2",
+            rxJava          : "3.0.4",
+            rxAndroid       : "3.0.0",
+            rxLifecycle     : "4.0.0",
+            logger          : "2.2.0",
+    ]
+
+    dependencies = [
+
+            //约束布局
+            "constraintlayout"        :
+                    "androidx.constraintlayout:constraintlayout:${depsVersion.constraintLayout}",
+
+            //刷新依赖
+            "smartrefresh-kernel"     :
+                    "com.scwang.smart:refresh-layout-kernel:${depsVersion.smartRefresh}",//核心必须依赖
+            "smartrefresh-header"     :
+                    "com.scwang.smart:refresh-header-material:${depsVersion.smartRefresh}",//谷歌刷新头
+            "smartrefresh-footer"     :
+                    "com.scwang.smart:refresh-footer-classics:${depsVersion.smartRefresh}",//经典加载
+
+            //BaseRecyclerViewAdapterHelper
+            "baserecyclerview-adapter":
+                    "com.github.CymChad:BaseRecyclerViewAdapterHelper:${depsVersion.adapterHelper}",
+
+            //retrofit+RxJava+RxLifecycle
+            "retrofit"                :
+                    "com.squareup.retrofit2:retrofit:${depsVersion.retrofit}",
+            "retrofit-converter-gson" :
+                    "com.squareup.retrofit2:converter-gson:${depsVersion.retrofit}",
+            "retrofit-adapter-rxjava" :
+                    "com.squareup.retrofit2:adapter-rxjava3:${depsVersion.retrofit}",//RxJava3CallAdapterFactory。Retrofit官方已支持RxJava3 Adapter，只要加入dependencies就能把Call变成Observable。
+            "okhttp-log-interceptor"  :
+                    "com.squareup.okhttp3:logging-interceptor:${depsVersion.okHttp}",
+            "rxjava"                  :
+                    "io.reactivex.rxjava3:rxjava:${depsVersion.rxJava}",
+            "rxandroid"               :
+                    "io.reactivex.rxjava3:rxandroid:${depsVersion.rxAndroid}",//AndroidSchedulers.mainThread()
+            "rxlifecycle"             :
+                    "com.trello.rxlifecycle4:rxlifecycle:${depsVersion.rxLifecycle}",//生命周期绑定
+            "rxlifecycle-android"     :
+                    "com.trello.rxlifecycle4:rxlifecycle-android:${depsVersion.rxLifecycle}",
+            "rxlifecycle-components"  :
+                    "com.trello.rxlifecycle4:rxlifecycle-components:${depsVersion.rxLifecycle}",
+            "rxlifecycle-kotlin"      :
+                    "com.trello.rxlifecycle4:rxlifecycle-kotlin:${depsVersion.rxLifecycle}",
+            "logger"                  :
+                    "com.orhanobut:logger:${depsVersion.logger}"
+    ]
+
+    // api 测试
+    apidebug = [
+            HostName: '"http://shop.zanyun1.vip/"',
+    ]
+
+    // api 正式
+    apirelease = [
+            HostName: '"https://gift.fenxiangyouxuan.vip/"',
+    ]
+}

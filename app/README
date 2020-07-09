@@ -1,0 +1,143 @@
+使用技术：
+Base,MVP,Kotlin,SmartRefreshLayout,BaseRecyclerViewAdapterHelper,Retrofit,RxJava,HTTPS安全认证,OkHttp无网缓存,RxLifecycle,Logger,
+
+>>>Kotlin：
+https://kotlinlang.org/docs/reference/
+https://developer.android.google.cn/kotlin
+
+>>>Dagger：
+https://dagger.dev/dev-guide/android.html
+https://developer.android.google.cn/training/dependency-injection/dagger-android
+
+>>>约束布局ConstraintLayout：https://www.jianshu.com/p/17ec9bd6ca8a
+implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+
+>>>智能刷新库：https://github.com/scwang90/SmartRefreshLayout
+如果使用 AndroidX 需要依赖 androidx.appcompat，Header依赖包建议需要使用哪个就复制哪个的源码到项目中。
+implementation 'androidx.appcompat:appcompat:1.0.0'                 //必须 1.0.0 以上
+implementation  'com.scwang.smart:refresh-layout-kernel:2.0.1'      //核心必须依赖
+implementation  'com.scwang.smart:refresh-header-classics:2.0.1'    //经典刷新头
+implementation  'com.scwang.smart:refresh-header-radar:2.0.1'       //雷达刷新头
+implementation  'com.scwang.smart:refresh-header-falsify:2.0.1'     //虚拟刷新头
+implementation  'com.scwang.smart:refresh-header-material:2.0.1'    //谷歌刷新头
+implementation  'com.scwang.smart:refresh-header-two-level:2.0.1'   //二级刷新头
+implementation  'com.scwang.smart:refresh-footer-ball:2.0.1'        //球脉冲加载
+implementation  'com.scwang.smart:refresh-footer-classics:2.0.1'    //经典加载
+并在 gradle.properties 中添加
+android.useAndroidX=true
+android.enableJetifier=true
+SmartRefreshLayout 不需要添加混淆过滤代码，并且已经混淆测试通过
+
+>>>强大灵活的RecyclerViewAdapter：https://github.com/CymChad/BaseRecyclerViewAdapterHelper
+将JitPack存储库添加到您的构建文件中(项目根目录下build.gradle文件)
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+添加依赖项
+仅支持AndroidX
+implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
+此资源库自带混淆规则，并且会自动导入，正常情况下无需手动导入。
+
+>>>Retrofit:
+Retrofit requires at minimum Java 8+ or Android API 21+.
+https://github.com/square/retrofit
+https://github.com/square/okhttp
+https://www.jianshu.com/p/360768def285
+implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
+implementation 'com.squareup.retrofit2:adapter-rxjava3:latest.version'
+implementation 'com.squareup.okhttp3:logging-interceptor:4.7.2'
+
+>>>RxJava：
+https://github.com/ReactiveX/RxJava
+http://reactivex.io/RxJava/3.x/javadoc/
+https://github.com/ReactiveX/RxAndroid
+RxJava3详细介绍：https://blog.csdn.net/h176nhx7/article/details/96054109
+Flowable使用介绍：https://my.oschina.net/carbenson/blog/1002466
+定义：是一个响应扩展的Java VM实现:一个通过使用可观察序列组合异步和基于事件的程序的库。(等同于Android中的 AsyncTask 、Handler作用)
+特点：由于其基于事件流的链式调用、逻辑简洁 & 使用简单的特点，深受各大 Android开发者的欢迎。
+原理：基于一种扩展的观察者模式
+应用：常见用例是在后台线程上运行一些计算、网络请求，并在UI线程上显示结果(或错误)。
+Flowable可看作是有背压的Observable。
+implementation "io.reactivex.rxjava3:rxjava:3.0.4"
+基础类：
+io.reactivex.rxjava3.core.Flowable：0..N流量，支持反应流和背压
+io.reactivex.rxjava3.core.Observable：0..N流动，无背压，
+io.reactivex.rxjava3.core.Single：正好是1个项目的流或一个错误，
+io.reactivex.rxjava3.core.Completable：没有项目但只有完成或错误信号的流程，
+io.reactivex.rxjava3.core.Maybe：没有项目，恰好一项或错误的流程。
+基础操作符：
+Observable(被观察者，可观察对象，就是要进行什么操作，相当于生产者)
+subscribe 负责处理事件，他是事件的消费者
+Operator 是对 Observable 发出的事件进行修改和变换
+subscribeOn(): 指定 subscribe() 所发生的线程
+observeOn(): 指定 Subscriber 所运行在的线程。或者叫做事件消费的线程
+doOnEach：数据源（Observable）每发送一次数据，就调用一次。
+doOnNext：数据源每次调用onNext() 之前都会先回调该方法。
+doOnError：数据源每次调用onError() 之前会回调该方法。
+doOnComplete：数据源每次调用onComplete() 之前会回调该方法
+doOnSubscribe：数据源每次调用onSubscribe() 之后会回调该方法
+doOnDispose：数据源每次调用dispose() 之后会回调该方法
+Flowable背压：
+当数据流通过异步步骤运行时，每一步可能以不同的速度执行不同的事情。这类步骤通常会由于临时缓冲或需要跳过/删除数据而导致内存使用量增加，
+为了避免这些步骤过于庞大，应用了所谓的backpressure，这是一种流控制形式，其中步骤可以表示它们准备处理多少项。这允许在某些情况下限制数据流的内存使用。
+Flowable类被指定为支持背压操作，而Observable类被指定为非背压操作(短序列、GUI交互等)。其他类型，Single, Maybe和Completable不支持背压，也不应该支持。
+Flowable流：
+source.operator1().operator2().operator3().subscribeOn(Schedulers.io()).observeOn(Schedulers.single()).subscribe(consumer)
+如果我们想象自己在操作器上，向左看源称为上游。向右看订阅者/使用者称为下游。
+可以通过subscribeOn将计算或阻塞IO移动到其他线程。一旦数据准备好了，就可以确保通过observeOn在前台或GUI线程上处理它们。
+Flowable和Observable区别：
+上下游：Flowable/Subscriber,Observable/Observer
+被观察者：FlowableOnSubscribe,ObservableOnSubscribe
+观察者：Subscriber,Observer
+取消订阅：Subscription,Disposable
+create()：create(FlowableOnSubscribe,BackpressureStrategy),create(ObservableOnSubscribe)//背压策略：BackpressureStrategy.MISSING、ERROR、DROP、LATEST
+Schedulers调度器
+RxJava操作符并不直接与线程或ExecutorServices一起工作，而是与所谓的调度器一起工作，这些调度器抽象出了一个统一API背后的并发源。RxJava 3提供了几个可通过调度器实用程序类访问的标准调度器。
+computation():在后台在固定数量的专用线程上运行大量的计算工作。大多数异步操作符将此作为默认调度程序。
+io():在一组动态变化的线程上运行I/O类或阻塞操作。
+single():在单个线程上按顺序和FIFO方式运行工作。
+trampoline():在其中一个参与线程中以顺序和FIFO的方式运行工作，通常用于测试目的。
+它们可以在所有JVM平台上使用，但是一些特定的平台，比如Android，定义了它们自己的典型调度器:AndroidSchedulers.mainThread(), SwingScheduler.instance() 或者 JavaFXSchedulers.gui()。
+在RxJava中，默认的调度器运行在守护进程线程上，这意味着一旦Java主线程退出，它们都将被停止，并且可能永远不会发生后台计算。
+
+Retrofit+RxJava封装：
+https://segmentfault.com/a/1190000019683544
+https://blog.csdn.net/cs_lwb/article/details/87987314
+执行顺序：初始化Retrofit——>调用请求接口——>调用执行线程——>输出结果
+
+>>>RxLifecycle：绑定Android周期
+https://github.com/trello/RxLifecycle
+https://www.jianshu.com/p/99cddc8c338c
+implementation 'com.trello.rxlifecycle4:rxlifecycle:4.0.0'
+// If you want to bind to Android-specific lifecycles
+implementation 'com.trello.rxlifecycle4:rxlifecycle-android:4.0.0'
+// If you want pre-written Activities and Fragments you can subclass as providers
+implementation 'com.trello.rxlifecycle4:rxlifecycle-components:4.0.0'
+// If you want pre-written support preference Fragments you can subclass as providers
+implementation 'com.trello.rxlifecycle4:rxlifecycle-components-preference:4.0.0'
+// If you want to use Android Lifecycle for providers
+implementation 'com.trello.rxlifecycle4:rxlifecycle-android-lifecycle:4.0.0'
+// If you want to use Kotlin syntax
+implementation 'com.trello.rxlifecycle4:rxlifecycle-kotlin:4.0.0'
+// If you want to use Kotlin syntax with Android Lifecycle
+implementation 'com.trello.rxlifecycle4:rxlifecycle-android-lifecycle-kotlin:4.0.0'
+类需要继承RxActivity, RxFragmentActivity，RxAppCompatActivity，RxFragment。
+
+>>>OkHttp无网缓存
+https://blog.csdn.net/mingC0758/article/details/81678959?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase
+
+>>>HTTPS安全认证
+OkHttp中使用：https://www.jianshu.com/p/4f8832e9642c
+https://github.com/square/okhttp/tree/master/okhttp-tls
+HTTPS实现原理：https://blog.csdn.net/qq_20521573/article/details/79233793
+获取网站证书：https://blog.csdn.net/iispring/article/details/51615631
+查看服务器证书：https://www.myssl.cn/tools/check-server-cert.html
+
+>>>日志输出Logger:https://github.com/orhanobut/logger
+implementation 'com.orhanobut:logger:2.2.0'
+

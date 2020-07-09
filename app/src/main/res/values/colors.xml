@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+
+    <color name="login_bg">#31435b</color>
+    <color name="white">#ffffff</color>
+    <color name="dark_gray">@android:color/darker_gray</color>
+    <color name="insure_gray">#cdcdcd</color>//价保背景
+    <color name="clear_white">#8c9aa6</color>//白色透明
+    <color name="subject_bg">#17cdd4</color>//主题色
+    <color name="bold_black">#131313</color>//黑色粗体
+    <color name="order_tab">#787878</color>//订单底部标签字体
+    <color name="date_select_bg">#fe7c1a</color>//选中日期的文本背景
+    <color name="order_status_bg">#196cc1</color>//订单状态背景
+    <color name="phone_bg">#557EB4</color>//手机号背景
+    <color name="confirm_bg">#fd7028</color>//确定按钮背景
+    <color name="gold">#bf9f6e</color>//京色
+    <color name="gray">#999999</color>//灰色
+    <color name="green">#5fd538</color>//绿色
+    <color name="red">#fd343e</color>//红色
+    <color name="orange">#fe7c1a</color>//橙色
+    <color name="normal">#333333</color>//标准字体
+</resources>
