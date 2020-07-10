@@ -73,8 +73,8 @@ open class BaseApplication : Application() {
             override fun onActivityDestroyed(activity: Activity) {}
         })
 
-        //对单位的自定义配置, 请在 App 启动时完成
-        configUnits();
+        //对单位的自定义配置, 请在App启动时完成。如果你项目用副单位开发请打开进行设置。
+//        configUnits();
     }
 
     /**
@@ -121,9 +121,10 @@ open class BaseApplication : Application() {
             .setSupportSP(false)
             //AndroidAutoSize 默认不支持副单位, 调用 UnitsManager#setSupportSubunits() 可选择一个自己心仪的副单位, 并开启对副单位的支持
             //只能在 pt、in、mm 这三个冷门单位中选择一个作为副单位, 三个单位的适配效果其实都是一样的, 您觉的哪个单位看起顺眼就用哪个
-            //副单位是用于规避修改 DisplayMetrics#density 所造成的对于其他使用 dp 布局的系统控件或三方库控件的不良影响，使用副单位后可直接填写设计图上的像素尺寸，不需要再将像素转化为 dp
-            //您选择什么单位就在 layout 文件中用什么单位进行布局, 我选择用 mm 为单位进行布局, 因为 mm 翻译为中文是妹妹的意思
-            //如果大家生活中没有妹妹, 那我们就让项目中最不缺的就是妹妹!
+            //副单位是用于规避修改 DisplayMetrics#density 所造成的对于其他使用 dp 布局的系统控件或三方库控件的不良影响
+            //您选择什么单位就在 layout 文件中用什么单位进行布局
             .supportSubunits = Subunits.MM
+        //开启支持 Fragment 自定义参数的功能
+        AutoSizeConfig.getInstance().isCustomFragment = true;
     }
 }

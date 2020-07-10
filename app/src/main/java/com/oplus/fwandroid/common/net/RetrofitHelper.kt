@@ -173,9 +173,10 @@ object RetrofitHelper {
                 /**
                  * Cache-Control，缓存控制
                  * public，所有网页信息都缓存
-                 * max-age，缓存有效期限，在这个期限内，不去再去进行网络访问
+                 * max-age，缓存有效期限，在这个期限内，不去再去进行网络访问。在超出max-age的情况下向服务端发起新的请求，请求失败的情况下返回缓存数据，否则向服务端重新发起请求。
+                 * max-stale，能容忍的最大过期时间。max-stale指令标示了客户端愿意接收一个已经过期了的响应。如果指定了max-stale的值，则最大容忍时间为对应的秒数。
+                 * max-stale在请求设置中有效，在响应设置中无效
                  * only-if-cached，只接受缓存的内容
-                 * max-stale，在设置期限内，客户端可以接受过去的内容
                  * removeHeader去除相关Cache-Control（缓存控制）的HTTP头信息，一般都是固定的格式
                  * removeHeader因为服务器如果不支持，会返回一些干扰信息，不清除下面无法生效
                  */
@@ -216,6 +217,7 @@ object RetrofitHelper {
         }).setLevel(HttpLoggingInterceptor.Level.BODY)
 
         //设置缓存文件
+        //设置后会在文件夹下生成3个文件，以.0结尾的文件缓存了http的响应头信息，以.1结尾的文件则缓存了下载的json数据，journal则是一个日志文件。
         val cacheFile = File(BaseApplication.instance.cacheDir, "responses")
         val cache = Cache(cacheFile, DEFAULT_CACHE_SIZE) //当缓存区的数据大小超过默认值的时候会依据LRU算法自动删除已缓存的数据
 

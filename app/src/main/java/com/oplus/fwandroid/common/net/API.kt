@@ -257,7 +257,7 @@ interface API {
      * 商品列表
      * @Headers cache：值为缓存天数，0表示不需要缓存（及时更新的接口）。不传表示支持默认缓存天数（RetrofitHelper），且只缓存Get请求。
      */
-    @Headers("cache:0")
+    @Headers("cache:1")
     @GET("appapi/taobao_api/getTBKMaterialGoodsList")
     fun getGoodsList(@QueryMap map: Map<String?, String?>?): Flowable<BaseResponse<ArrayList<GoodsList>>>
 }
