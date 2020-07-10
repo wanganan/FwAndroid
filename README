@@ -1,5 +1,6 @@
 使用技术：
 Base,MVP,Kotlin,SmartRefreshLayout,BaseRecyclerViewAdapterHelper,Retrofit,RxJava,HTTPS安全认证,OkHttp无网缓存,RxLifecycle,Logger,
+屏幕适配，全局字体改变，
 
 ——————————————————————————————————————————————————
 >>>Kotlin：
@@ -239,4 +240,20 @@ for (i in 1..dh) {
    )
 }
 sb.append("</resources>")
+——————————————————————————————————————————————————
+>>>全局缩放文字大小
+思路：在BaseActivity重写attachBaseContext方法，将系统的fontScale重写为配置在清单文件中的缩放比例。
+可结合Android 8.0 新特性：自动调整的TextView使用。该TextView中的文字会根据内容长短自动调整大小。
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:autoSizeTextType="uniform"
+    android:autoSizeMinTextSize="12sp"
+    android:autoSizeMaxTextSize="100sp"
+    android:autoSizeStepGranularity="2sp" />
+autoSizeMinTextSize：字体大小范围的最小值
+autoSizeMaxTextSize：字体大小范围的最大值。Min和Max的范围为12sp到100sp。
+autoSizeStepGranularity：步长
+autoSizeTextType：自动调整大小，none或uniform
 ——————————————————————————————————————————————————
