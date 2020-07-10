@@ -22,7 +22,7 @@
         android:textColor="#2c2c2c"
         android:id="@+id/tv_title"
         app:layout_constraintTop_toBottomOf="@id/iv_logo"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:lines="2"
         android:lineSpacingMultiplier="1.2"
         android:ellipsize="end"
@@ -60,6 +60,9 @@
             android:layout_marginLeft="2dp"
             android:layout_marginRight="2dp"
             android:textColor="#2c2c2c"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeMaxTextSize="12sp"
             android:id="@+id/tv_brokerage"
             />
         <TextView
@@ -84,7 +87,6 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="3dp"
         android:text="券后￥"
-
         android:textColor="#FF4B33"
         android:paddingLeft="8dp"
         android:id="@+id/qh"
@@ -96,7 +98,6 @@
         android:layout_height="wrap_content"
         android:textColor="#FF4B33"
         tool:text="123"
-
         android:textSize="16sp" />
 
         <TextView

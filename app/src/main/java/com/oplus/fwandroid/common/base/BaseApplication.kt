@@ -5,6 +5,7 @@ import android.app.Application
 import android.os.Bundle
 import com.oplus.fwandroid.BuildConfig
 import com.oplus.fwandroid.common.Global
+import com.oplus.fwandroid.common.utils.ManifestHelper
 import com.oplus.fwandroid.common.utils.PreferencesUtil
 import com.orhanobut.logger.*
 import me.jessyan.autosize.AutoSizeConfig
@@ -50,6 +51,7 @@ open class BaseApplication : Application() {
                 return BuildConfig.DEBUG
             }
         })
+        //将Log日志保存到文件中，默认路径：storage/emulated/0/logger
 //        Logger.addLogAdapter(DiskLogAdapter(formatStrategy))
 
         //模拟token
@@ -75,6 +77,9 @@ open class BaseApplication : Application() {
 
         //对单位的自定义配置, 请在App启动时完成。如果你项目用副单位开发请打开进行设置。
 //        configUnits();
+
+        //初始化全局字体设置
+        ManifestHelper.initFontMeta(this)
     }
 
     /**
@@ -127,4 +132,5 @@ open class BaseApplication : Application() {
         //开启支持 Fragment 自定义参数的功能
         AutoSizeConfig.getInstance().isCustomFragment = true;
     }
+
 }

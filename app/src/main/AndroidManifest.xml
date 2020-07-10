@@ -37,6 +37,11 @@
         <meta-data
             android:name="design_height_in_dp"
             android:value="667" />
+        <!--全局文字缩放倍数,value为float类型-->
+        <!--Android 8.0 有个自动调整TextView新特性，可结合使用-->
+        <meta-data
+            android:name="font_scale"
+            android:value="0.8f" />
     </application>
 
 </manifest>

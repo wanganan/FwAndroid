@@ -3,7 +3,6 @@ package com.oplus.fwandroid.common.net
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import android.util.Log
 import com.oplus.fwandroid.BuildConfig
 import com.oplus.fwandroid.common.Global
 import com.oplus.fwandroid.common.base.BaseApplication
@@ -11,15 +10,11 @@ import com.oplus.fwandroid.common.utils.PreferencesUtil
 import com.oplus.fwandroid.common.utils.StringUtils
 import com.orhanobut.logger.Logger
 import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.logging.HttpLoggingInterceptor
-import org.json.JSONException
-import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 
@@ -187,28 +182,6 @@ object RetrofitHelper {
                 .build()
         }
 
-        //检查token有没过期
-        val tokenRespInterceptor = Interceptor { chain ->
-            //拦截返回体  判断token是否过期.过期重写拉取新的token
-            val request: Request = chain.request()
-            val response: Response = chain.proceed(request)
-            if (isTokenExpired(response)) {
-                //同步请求方式，获取最新的Token
-                val newToken: String? = getNewToken()
-                if (newToken != null) {
-                    //使用新的Token，创建新的请求
-                    val newRequest: Request = chain.request()
-                        .newBuilder()
-                        .header("token", newToken)
-                        .build()
-                    //重新请求
-                    return@Interceptor chain.proceed(newRequest)
-                }
-            }
-            response.newBuilder()
-                .body(body?.let { ResponseBody.create("UTF-8".toMediaTypeOrNull(), it) }).build()
-        }
-
         //打印请求日志
         val loggingInterceptor = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
             override fun log(message: String) {
@@ -249,7 +222,6 @@ object RetrofitHelper {
              */
             .addInterceptor(headerInterceptor)
             .addInterceptor(parameterInterceptor)
-            .addNetworkInterceptor(tokenRespInterceptor)
             .addNetworkInterceptor(loggingInterceptor)
             .addInterceptor(offlineCacheInterceptor)//在用户端添加请求拦截器
             .addNetworkInterceptor(netCacheInterceptor)//在网络端添加响应拦截器（注意和用户端的区别）
@@ -291,35 +263,6 @@ object RetrofitHelper {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         return retrofit!!.create(API::class.java)
-    }
-
-    /**
-     * 根据Response，判断Token是否失效
-     *
-     * @param response
-     * @return
-     */
-    private fun isTokenExpired(response: Response): Boolean {
-        try {
-            body = response.body!!.string()
-            val `object` = JSONObject(body)
-            code = `object`.getInt("code")
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-        return code == 0
-    }
-
-    /**
-     * 同步请求方式，获取最新的Token
-     *
-     * @return
-     */
-    private fun getNewToken(): String? {
-        // 通过获取token的接口，同步请求接口
-        return PreferencesUtil.getString(Global.User.SHPNAME, Global.User.token)
     }
 
     /**

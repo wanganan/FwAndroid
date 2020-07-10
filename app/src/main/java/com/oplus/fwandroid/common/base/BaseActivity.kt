@@ -1,13 +1,15 @@
 package com.oplus.fwandroid.common.base
 
 import android.app.Activity
+import android.content.Context
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.oplus.fwandroid.R
+import com.oplus.fwandroid.common.utils.ManifestHelper
 import com.trello.rxlifecycle4.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_base.*
 
@@ -99,5 +101,29 @@ abstract class BaseActivity : RxAppCompatActivity(), BaseView {
 
     override fun background(): Int {
         TODO("Not yet implemented")
+    }
+
+    //重写字体缩放比例 api<24
+    override fun getResources(): Resources? {
+        val res = super.getResources()
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) {
+            val config = res.configuration
+            config.fontScale = ManifestHelper.fontScale //设置字体缩放倍数
+            res.updateConfiguration(config, res.displayMetrics)
+        }
+        return res
+    }
+
+    //重写字体缩放比例  api>24
+    override fun attachBaseContext(newBase: Context) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N) {
+            val res = newBase.resources
+            val config = res.configuration
+            config.fontScale = ManifestHelper.fontScale
+            val newContext = newBase.createConfigurationContext(config)
+            super.attachBaseContext(newContext)
+        } else {
+            super.attachBaseContext(newBase)
+        }
     }
 }
