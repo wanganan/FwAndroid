@@ -47,7 +47,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="分享赚"
+        android:text="@string/share_earn"
         android:layout_marginRight="3dp"
         android:textSize="10sp"
         android:textColor="#2c2c2c"
@@ -86,7 +86,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="3dp"
-        android:text="券后￥"
+        android:text="@string/Aft_Coupon"
         android:textColor="#FF4B33"
         android:paddingLeft="8dp"
         android:id="@+id/qh"
@@ -150,7 +150,7 @@
             >
             <TextView
                 android:layout_width="14dp"
-                android:text="券"
+                android:text="@string/coupon"
                 android:textColor="#ff2c2c2c"
                 android:textSize="10sp"
                 android:gravity="center"

@@ -41,7 +41,7 @@
         <!--Android 8.0 有个自动调整TextView新特性，可结合使用-->
         <meta-data
             android:name="font_scale"
-            android:value="0.8f" />
+            android:value="1f" />
     </application>
 
 </manifest>

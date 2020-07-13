@@ -2,10 +2,11 @@ package com.oplus.fwandroid.common.base
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.os.Bundle
+import com.hjq.language.LanguagesManager
 import com.oplus.fwandroid.BuildConfig
 import com.oplus.fwandroid.common.Global
-import com.oplus.fwandroid.common.utils.ManifestHelper
 import com.oplus.fwandroid.common.utils.PreferencesUtil
 import com.orhanobut.logger.*
 import me.jessyan.autosize.AutoSizeConfig
@@ -75,11 +76,24 @@ open class BaseApplication : Application() {
             override fun onActivityDestroyed(activity: Activity) {}
         })
 
-        //对单位的自定义配置, 请在App启动时完成。如果你项目用副单位开发请打开进行设置。
+        //屏幕适配：对单位的自定义配置, 请在App启动时完成。如果你项目用副单位开发请打开进行设置。
 //        configUnits();
 
-        //初始化全局字体设置
-        ManifestHelper.initFontMeta(this)
+        //初始化全局字体设置，如果项目中需要全局缩放字体大小时打开并修改manifest中font_scale的值。
+//        ManifestHelper.initFontMeta(this)
+
+        //初始化国际化框架，如果项目中用到了语言切换请打开。默认跟随系统语言变化。切换方法见README。
+//        LanguagesManager.init(this);
+    }
+
+    /**
+     * ContextWrapper的方法，在onCreate()前调用，可以在这里进行全局配置。
+     * super.attachBaseContext前不能调用getApplicationContext()，会报NullPointerException
+     */
+    override fun attachBaseContext(base: Context?) {
+        //国际化适配（绑定语种）
+        //只要是 Context 的子类都需要重写，Activity，Service 也雷同
+        super.attachBaseContext(LanguagesManager.attach(base));
     }
 
     /**

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
+    <!--Android P系统[9.0(SDK28)]以后限制了明文流量的网络请求，http请求会报错-->
     <base-config cleartextTrafficPermitted="true" />
 </network-security-config>

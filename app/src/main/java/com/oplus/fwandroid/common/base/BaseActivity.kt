@@ -8,10 +8,12 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import com.hjq.language.LanguagesManager
 import com.oplus.fwandroid.R
 import com.oplus.fwandroid.common.utils.ManifestHelper
 import com.trello.rxlifecycle4.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_base.*
+
 
 /**
  * @author Sinaan
@@ -103,10 +105,10 @@ abstract class BaseActivity : RxAppCompatActivity(), BaseView {
         TODO("Not yet implemented")
     }
 
-    //重写字体缩放比例 api<24
     override fun getResources(): Resources? {
         val res = super.getResources()
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) {
+            //重写字体缩放比例
             val config = res.configuration
             config.fontScale = ManifestHelper.fontScale //设置字体缩放倍数
             res.updateConfiguration(config, res.displayMetrics)
@@ -114,16 +116,16 @@ abstract class BaseActivity : RxAppCompatActivity(), BaseView {
         return res
     }
 
-    //重写字体缩放比例  api>24
     override fun attachBaseContext(newBase: Context) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N) {
+            //重写字体缩放比例
             val res = newBase.resources
             val config = res.configuration
             config.fontScale = ManifestHelper.fontScale
             val newContext = newBase.createConfigurationContext(config)
-            super.attachBaseContext(newContext)
+            super.attachBaseContext(LanguagesManager.attach(newContext))// 绑定语种
         } else {
-            super.attachBaseContext(newBase)
+            super.attachBaseContext(LanguagesManager.attach(newBase))// 绑定语种
         }
     }
 }

@@ -20,7 +20,8 @@ ext {
             rxAndroid       : "3.0.0",
             rxLifecycle     : "4.0.0",
             logger          : "2.2.0",
-            autosize        : "1.2.1"
+            autosize        : "1.2.1",
+            language        : "3.0"
     ]
 
     dependencies = [
@@ -65,7 +66,9 @@ ext {
             "logger"                  :
                     "com.orhanobut:logger:${depsVersion.logger}",
             "autosize"                :
-                    "me.jessyan:autosize:${depsVersion.autosize}"
+                    "me.jessyan:autosize:${depsVersion.autosize}",
+            "language"                :
+                    "com.hjq:language:${depsVersion.language}"
     ]
 
     // api 测试

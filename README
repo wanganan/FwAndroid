@@ -1,6 +1,6 @@
 使用技术：
 Base,MVP,Kotlin,SmartRefreshLayout,BaseRecyclerViewAdapterHelper,Retrofit,RxJava,HTTPS安全认证,OkHttp无网缓存,RxLifecycle,Logger,
-屏幕适配，全局字体改变，
+屏幕适配，全局字体改变，语言国际化，代码混淆，
 
 ——————————————————————————————————————————————————
 >>>Kotlin：
@@ -256,4 +256,28 @@ autoSizeMinTextSize：字体大小范围的最小值
 autoSizeMaxTextSize：字体大小范围的最大值。Min和Max的范围为12sp到100sp。
 autoSizeStepGranularity：步长
 autoSizeTextType：自动调整大小，none或uniform
+——————————————————————————————————————————————————
+>>>语言国际化
+https://github.com/getActivity/MultiLanguages
+implementation 'com.hjq:language:3.0'
+-keep class com.hjq.language.** {*;}
+需要配合values设置，多语言strings.xml创建：res右键-New-Android Resource File-Available qualifiers-Locale->>-Chosen qualifiers...，选择对应的语言，文件命名为strings.xml。
+在strings.xml文件中添加的不同语言的字符串资源的名称要一样，如都是app_name。所以layout或者代码中使用到的文字不能采用硬编码，只能统一通过strings.xml动态获取。
+如果不设置语种，存在对应不同语系资源文件的情况下，APP的语言会随着手机设置里的系统语言而改变。
+接口中的文字转换可以和后端通过请求参数配合。
+在代码中动态设置涉及到的方法：
+LanguagesManager.setAppLanguage(Context context, Locale locale);//设置当前的语种（返回true需要重启App）
+LanguagesManager.getAppLanguage(Context context);//获取当前的语种
+LanguagesManager.setSystemLanguage(Context context);//将App语种设置为系统语种（返回true需要重启App）
+LanguagesManager.getSystemLanguage();//获取系统的语种
+LanguagesManager.getLanguageString(Context context, Locale locale, int stringId);//获取某个语种下的String
+LanguagesManager.getLanguageResources(Context context, Locale locale);//获取某个语种下的Resources对象
+为了使重启显得平滑，可以充分运用Activity跳转动画
+if (restart) {
+  //我们可以充分运用 Activity 跳转动画，在跳转的时候设置一个渐变的效果
+  startActivity(Intent(this, ListActivity::class.java))
+  overridePendingTransition(R.anim.activity_alpha_in, R.anim.activity_alpha_out)
+  finish()
+  //ActivityUtils.startActivityAndFinish(this, MainActivity::class.java, ActivityUtils.Anim.Fade_In_Out)
+}
 ——————————————————————————————————————————————————

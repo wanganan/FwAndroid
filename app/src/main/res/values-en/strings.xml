@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FwAndroid</string>
+    <string name="share_earn">share_earn</string>
+    <string name="Aft_Coupon">Aft_Coupon￥</string>
+    <string name="coupon">coupon</string>
+</resources>
