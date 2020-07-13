@@ -13,7 +13,7 @@ import android.content.pm.PackageManager
  * version: 1.0
  */
 object ManifestHelper {
-    const val FONT_SCALE = "font_scale"//字体缩放倍数
+    private const val FONT_SCALE = "font_scale"//字体缩放倍数
     var fontScale = 1f
 
     /**

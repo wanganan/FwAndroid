@@ -243,6 +243,9 @@ sb.append("</resources>")
 ——————————————————————————————————————————————————
 >>>全局缩放文字大小
 思路：在BaseActivity重写attachBaseContext方法，将系统的fontScale重写为配置在清单文件中的缩放比例。
+<meta-data
+    android:name="font_scale"
+    android:value="1f" />
 可结合Android 8.0 新特性：自动调整的TextView使用。该TextView中的文字会根据内容长短自动调整大小。
 <?xml version="1.0" encoding="utf-8"?>
 <TextView
