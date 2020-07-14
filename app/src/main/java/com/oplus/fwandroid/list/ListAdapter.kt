@@ -8,9 +8,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
-import com.oplus.fwandroid.common.bean.GoodsList
 import com.oplus.fwandroid.R
-import com.oplus.fwandroid.common.utils.ImageUtil
+import com.oplus.fwandroid.common.bean.GoodsList
+import com.oplus.fwandroid.common.glide.GlideHelper
 import com.oplus.fwandroid.common.utils.NumberFormat
 import com.oplus.fwandroid.common.widget.CenterAlignImageSpan
 
@@ -55,11 +55,6 @@ class ListAdapter(layoutId: Int, data: MutableList<GoodsList>? = null) :
 
         //显示图片
         var ivLogo = helper.getView(R.id.iv_logo) as ImageView
-        ImageUtil.loadImageCrossFadeRound(
-            context,//BaseQuickAdapter属性
-            ivLogo,
-            item.mainPic,
-            R.drawable.ic_lsit_default
-        )
+        GlideHelper.loadRound(item.mainPic!!,ivLogo,10)
     }
 }

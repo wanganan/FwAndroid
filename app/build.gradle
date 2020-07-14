@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
 
@@ -63,7 +64,23 @@ android {
             versionNameSuffix rootProject.ext.android.versionName
             //签名配置文件
             signingConfig signingConfigs.release
-            //指定插件使用的混淆文件
+            /**
+             * 代码混淆（Obfuscated code）是将程序中的代码以某种规则转换为难以阅读和理解的代码的一种行为。
+             * 经过混淆处理之后，我们的 APK 中包名、类名、成员名等都被替换为随机、无意义的名称，增加了代码阅读和理解的困难程度。
+             * 混淆后APK难以被逆向工程，即很大程度上增加反编译的成本。此外，Android当中的"混淆"还能够在打包时移除无用资源，显著减少APK体积。
+             * 最后，还能以变通方式避免Android中常见的64k方法数引用的限制。
+             * 混淆会增加额外的编译时间，所以不建议在 debug 模式下启用。
+             */
+            /*启用代码收缩、混淆和优化，设置true则默认启用 R8 代码缩减功能。
+            启用R8构建项目后会在模块下的build\outputs\mapping\release文件夹下输出下列文件:
+            dump.txt：说明 APK 中所有类文件的内部结构。
+            mapping.txt：提供原始与混淆过的类、方法和字段名称之间的转换。
+            seeds.txt：列出未进行混淆的类和成员。
+            unused.txt：列出从 APK 移除的代码。*/
+            minifyEnabled true
+            //开启资源的压缩。由于资源压缩与代码混淆是协同工作，只有在启用混淆的前提下开启资源压缩才会有效！
+            shrinkResources true
+            //指定插件使用的混淆文件，第一个文件是Android系统为我们提供的默认混淆规则文件(在sdk/tools/proguard目录下)，第二个是我们想要自定义的混淆规则。
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -124,6 +141,16 @@ dependencies {
 
     //语言国际化
     implementation rootProject.ext.dependencies["language"]
+
+    //Glide
+    implementation rootProject.ext.dependencies["glide"]
+    implementation (rootProject.ext.dependencies["glide-okhttp-integration"]){
+        exclude group: 'glide-parent'
+    }
+//    在 Kotlin 编写的类里使用 Glide 注解，需要引入一个 kapt 依赖，以代替常规的 annotationProcessor 依赖
+//    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+//    如果不想使用集成库或配置Glide，请跳过此选项。
+    kapt rootProject.ext.dependencies["glide-compiler"]
 
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'com.github.bumptech.glide:glide:4.9.0'

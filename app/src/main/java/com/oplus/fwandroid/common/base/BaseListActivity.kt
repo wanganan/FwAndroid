@@ -3,14 +3,11 @@ package com.oplus.fwandroid.common.base
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.core.widget.NestedScrollView
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.*
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.oplus.fwandroid.R
+import com.oplus.fwandroid.common.glide.GlideApp
 import com.oplus.fwandroid.common.utils.DensityUtil
 import kotlinx.android.synthetic.main.activity_base_list.*
 
@@ -87,16 +84,36 @@ abstract class BaseListActivity<T> : BaseLoadActivity() {
             false
         }
 
-        nestedScrollView.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-            val height: Int = DensityUtil.getScreenHeight(this)
-            if (scrollY > height * 0.8) {
-                top.visibility = View.VISIBLE
-            } else {
-                top.visibility = View.GONE
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                when (newState) {
+                    //在列表滑动过程中可以调用Glide的pauseRequests方法来是图片暂停加载，当滑动结束后再调用resumeRequests来恢复加载
+                    2 -> { // SCROLL_STATE_FLING
+                        GlideApp.with(applicationContext).pauseRequests()
+                    }
+                    0 -> { // SCROLL_STATE_IDLE
+                        GlideApp.with(applicationContext).resumeRequests()
+                    }
+                    1 -> { // SCROLL_STATE_TOUCH_SCROLL
+                        GlideApp.with(applicationContext).resumeRequests()
+                    }
+                }
+
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val height = DensityUtil.getScreenHeight(this@BaseListActivity)
+                if (getScrollYDistance(layoutManager) > height * 0.8) {
+                    top.visibility = View.VISIBLE
+                } else {
+                    top.visibility = View.GONE
+                }
             }
         })
         top.setOnClickListener {
-            nestedScrollView.smoothScrollTo(0, 0)
+            recyclerView.smoothScrollToPosition(0)
             top.visibility = View.GONE
         }
     }
@@ -176,4 +193,14 @@ abstract class BaseListActivity<T> : BaseLoadActivity() {
      * item里子view的长按事件，需要先添加在childLongClickRegisterIds中
      */
     abstract fun itemChildLongClick(view: View, position: Int)
+
+    /**
+     * 获取RecyclerView纵向的滑动距离
+     */
+    private fun getScrollYDistance(layoutManager: GridLayoutManager): Int {
+        val position = layoutManager.findFirstVisibleItemPosition()
+        val firstVisibleChildView = layoutManager.findViewByPosition(position)
+        val itemHeight = firstVisibleChildView!!.height
+        return position * itemHeight - firstVisibleChildView!!.top
+    }
 }
