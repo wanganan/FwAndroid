@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
+import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
@@ -87,17 +88,38 @@ object GlideHelper {
              * .transform(MultiTransformation<Bitmap>(CircleCrop(),BlurTransformation(25), GrayscaleTransformation()))
              */
 //            .transform(CircleCrop())
-            .transform(MultiTransformation<Bitmap>(RoundedCornersTransformation(10,50,RoundedCornersTransformation.CornerType.ALL)))
+            .transform(
+                MultiTransformation<Bitmap>(
+                    RoundedCornersTransformation(
+                        20,
+                        0,
+                        RoundedCornersTransformation.CornerType.ALL
+                    )
+                )
+            )
             /**
              * 让Glide在加载图片的过程中不进行图片变换
-            */
+             */
 //            .dontTransform()
             /**
              * Glide为了方便我们使用直接提供了现成的API。这些内置的图片变换API其实也只是对transform()方法进行了一层封装而已，它们背后的源码仍然还是借助transform()方法来实现的。
              */
 //            .centerCrop()
+            /**
+             * 定义图片格式
+             * PREFER_ARGB_8888：每个像素使用了4个字节，图片质量更高。（默认）
+             * PREFER_RGB_565：每个像素使用了2个字节，相对减少占用内存。
+             */
             .format(DecodeFormat.PREFER_RGB_565)
+            /**
+             * 分配加载优先级。Glide将其作为一个指导来最优化处理请求，但并不意味着所有的图片都能按顺序加载。
+             * 递增的方式为Priority.LOW，NORMAL，HIGH，IMMEDIATE。
+             */
             .priority(Priority.LOW)
+            /**
+             * 移除所有动画，不要显示效果
+             * 对应于.transition(GenericTransitionOptions.with(R.anim.zoom_enter))
+             */
             .dontAnimate()
             /**
              * Glide缓存机制
@@ -163,6 +185,21 @@ object GlideHelper {
              * Glide.with(this).load(imageUri).into(imageView);
              */
             .load(url)
+            /**
+             * 添加显示动画
+             * 在 Glide 中，Transitions (直译为”过渡”) 允许你定义 Glide 如何从占位符到新加载的图片，或从缩略图到全尺寸图像过渡。
+             * 不同于 Glide v3，Glide v4 将不会默认应用交叉淡入或任何其他的过渡效果。每个请求必须手动应用过渡。
+             * 可以通过使用 BitmapTransitionOptions 或 DrawableTransitionOptions 来指定类型特定的过渡动画。对于 Bitmap 和 Drawable 之外的资源类型，可以使用 GenericTransitionOptions。
+             *
+             * Android 中的动画代价是比较大的，尤其是同时开始大量动画的时候。 交叉淡入和其他涉及 alpha (透明度) 变化的动画显得尤其昂贵。
+             * 此外，动画通常比图片解码本身还要耗时。在列表和网格中滥用动画可能会让图像的加载显得缓慢而卡顿。
+             * 为了提升性能，请在使用 Glide 向 ListView , GridView, 或 RecyclerView 加载图片时考虑避免使用动画，
+             * 尤其是大多数情况下，你希望图片被尽快缓存和加载的时候。作为替代方案，请考虑预加载，这样当用户滑动到具体的 item 的时候，图片已经在内存中了。
+             */
+            .transition(GenericTransitionOptions.with(R.anim.zoom_enter))
+            /**
+             * 运用设置的参数
+             */
             .apply(requestOptions)
             /**
              * 用来监听Glide加载图片的状态。需要结合into或preload方法一起使用的。
@@ -208,6 +245,10 @@ object GlideHelper {
              * 在子线程当中get()后使用runOnUiThread()切回到主线程进行后续操作。
              */
 //            .submit()
+            /**
+             * 自定义的API，你可以在其中封装某些公共的方法。
+             */
+            .cacheSource()
             .into(object : DrawableImageViewTarget(image) {
             })
     }
