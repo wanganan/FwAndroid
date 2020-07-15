@@ -11,18 +11,19 @@ ext {
     ]
 
     depsVersion = [
-            constraintLayout: "1.1.3",
-            smartRefresh    : "2.0.1",
-            adapterHelper   : "3.0.4",
-            retrofit        : "2.9.0",
-            okHttp          : "4.7.2",
-            rxJava          : "3.0.4",
-            rxAndroid       : "3.0.0",
-            rxLifecycle     : "4.0.0",
-            logger          : "2.2.0",
-            autosize        : "1.2.1",
-            language        : "3.0",
-            glide           : "4.11.0"
+            constraintLayout    : "1.1.3",
+            smartRefresh        : "2.0.1",
+            adapterHelper       : "3.0.4",
+            retrofit            : "2.9.0",
+            okHttp              : "4.7.2",
+            rxJava              : "3.0.4",
+            rxAndroid           : "3.0.0",
+            rxLifecycle         : "4.0.0",
+            logger              : "2.2.0",
+            autosize            : "1.2.1",
+            language            : "3.0",
+            glide               : "4.11.0",
+            glideTransformations: "4.1.0"
     ]
 
     dependencies = [
@@ -76,6 +77,8 @@ ext {
                     "com.github.bumptech.glide:okhttp3-integration:${depsVersion.glide}",
             "glide-compiler"          :
                     "com.github.bumptech.glide:compiler:${depsVersion.glide}",
+            "glide-transformations"   :
+                    "jp.wasabeef:glide-transformations:${depsVersion.glideTransformations}"
     ]
 
     // api 测试

@@ -55,6 +55,6 @@ class ListAdapter(layoutId: Int, data: MutableList<GoodsList>? = null) :
 
         //显示图片
         var ivLogo = helper.getView(R.id.iv_logo) as ImageView
-        GlideHelper.loadRound(item.mainPic!!,ivLogo,10)
+        GlideHelper.load(item.mainPic!!,ivLogo)
     }
 }

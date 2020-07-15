@@ -147,12 +147,10 @@ dependencies {
     implementation (rootProject.ext.dependencies["glide-okhttp-integration"]){
         exclude group: 'glide-parent'
     }
-//    在 Kotlin 编写的类里使用 Glide 注解，需要引入一个 kapt 依赖，以代替常规的 annotationProcessor 依赖
-//    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
-//    如果不想使用集成库或配置Glide，请跳过此选项。
+    //在 Kotlin 编写的类里使用 Glide 注解，需要引入一个 kapt 依赖，以代替常规的 annotationProcessor 依赖
+    //annotationProcessor rootProject.ext.dependencies["glide-compiler"]
+    //相比于Glide 3，这里要多添加一个compiler的库，这个库是用于生成Generated API的。如果不想使用集成库或配置Glide，可跳过此选项。
     kapt rootProject.ext.dependencies["glide-compiler"]
-
-    implementation 'org.greenrobot:eventbus:3.1.1'
-    implementation 'com.github.bumptech.glide:glide:4.9.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    //图片变换开源库（裁剪变换、颜色变换、模糊变换等等）
+    implementation rootProject.ext.dependencies["glide-transformations"]
 }
