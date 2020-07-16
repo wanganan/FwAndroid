@@ -88,7 +88,7 @@ object RetrofitHelper {
                 /**
                  * 浏览器的身份标识字符串
                  */
-                .addHeader("User-Agent", Global.APPNAME)
+                .addHeader("User-Agent", BuildConfig.APPLICATION_ID)
                 /**
                  * Authorization认证
                  * 假设服务端有一个收藏的接口，该接口的调用必须要先判断用户是否已经登录，但是我们不能在每一次接口调用的时候都携带上用户登录信息，这样太麻烦了，

@@ -20,14 +20,24 @@ import com.bumptech.glide.request.BaseRequestOptions
  * 自定义API的方法都必须是静态方法，而且第一个参数必须是RequestOptions，后面你可以加入任意多个你想自定义的参数。
  * 定制完后同样需要在Android Studio中点击菜单栏Build -> Rebuild Project，然后就可以类似这样使用了。
  * GlideApp.with(this).load(url).cacheSource().into(imageView);
- * 这个类可以作为对公共配置的封装。
+ * 这个类可以当做一个工具类，里面可以封装公共配置或者自定义你需要的Glide没有的方法。
  */
 @GlideExtension
 object GlideApi {
+    //缩略图的最小尺寸，单位：px
+    private const val MINI_THUMB_SIZE = 100
+
     @JvmStatic
     @JvmOverloads
     @GlideOption
     fun cacheSource(options: BaseRequestOptions<*>): BaseRequestOptions<*> {
         return options.diskCacheStrategy(DiskCacheStrategy.DATA)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    @GlideOption
+    fun miniThumb(options: BaseRequestOptions<*>): BaseRequestOptions<*> {
+        return options.fitCenter().override(MINI_THUMB_SIZE)
     }
 }

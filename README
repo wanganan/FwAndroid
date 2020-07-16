@@ -72,18 +72,6 @@ io.reactivex.rxjava3.core.Observable：0..N流动，无背压，
 io.reactivex.rxjava3.core.Single：正好是1个项目的流或一个错误，
 io.reactivex.rxjava3.core.Completable：没有项目但只有完成或错误信号的流程，
 io.reactivex.rxjava3.core.Maybe：没有项目，恰好一项或错误的流程。
-基础操作符：
-Observable(被观察者，可观察对象，就是要进行什么操作，相当于生产者)
-subscribe 负责处理事件，他是事件的消费者
-Operator 是对 Observable 发出的事件进行修改和变换
-subscribeOn(): 指定 subscribe() 所发生的线程
-observeOn(): 指定 Subscriber 所运行在的线程。或者叫做事件消费的线程
-doOnEach：数据源（Observable）每发送一次数据，就调用一次。
-doOnNext：数据源每次调用onNext() 之前都会先回调该方法。
-doOnError：数据源每次调用onError() 之前会回调该方法。
-doOnComplete：数据源每次调用onComplete() 之前会回调该方法
-doOnSubscribe：数据源每次调用onSubscribe() 之后会回调该方法
-doOnDispose：数据源每次调用dispose() 之后会回调该方法
 Flowable背压：
 当数据流通过异步步骤运行时，每一步可能以不同的速度执行不同的事情。这类步骤通常会由于临时缓冲或需要跳过/删除数据而导致内存使用量增加，
 为了避免这些步骤过于庞大，应用了所谓的backpressure，这是一种流控制形式，其中步骤可以表示它们准备处理多少项。这允许在某些情况下限制数据流的内存使用。
@@ -288,8 +276,10 @@ if (restart) {
 https://developer.android.google.cn/studio/build/shrink-code
 https://jakewharton.com/r8-optimization-lambda-groups/
 https://juejin.im/post/5d1717996fb9a07eeb13bc95
+——————————————————————————————————————————————————
 >>>Glide
 https://github.com/bumptech/glide
+Glide v3,v4区别：https://muyangmin.github.io/glide-docs-cn/doc/migrating.html
 解析系列：https://blog.csdn.net/guolin_blog/article/details/53759439
 图片加载oom解决：https://blog.csdn.net/guolin_blog/article/details/9316683
 图片变换开源库：https://github.com/wasabeef/glide-transformations

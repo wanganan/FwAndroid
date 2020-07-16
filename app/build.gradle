@@ -36,18 +36,20 @@ android {
 
     //默认配置
     defaultConfig {
+        //versionName不能写在config.gradle下，不然获取到的versionName为1.0.01.0.0。
+        versionCode 1
+        versionName "1.0.0"
+
         applicationId rootProject.ext.android.applicationId
         minSdkVersion rootProject.ext.android.minSdkVersion
         targetSdkVersion rootProject.ext.android.targetSdkVersion
-        versionCode rootProject.ext.android.versionCode
-        versionName rootProject.ext.android.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        signingConfig signingConfigs.release
     }
 
     buildTypes {
         debug {
+            //设置debug模式下加载的BaseUrl
             buildConfigField 'String', 'HostName', rootProject.ext.apidebug.HostName
             //是否使用zipAlign优化apk,Android sdk包里面的工具，能够对打包的应用程序进行优化，让整个系统运行的更快
             zipAlignEnabled false
@@ -57,6 +59,7 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
+            //设置release模式下加载的BaseUrl
             buildConfigField 'String', 'HostName', rootProject.ext.apirelease.HostName
             //是否使用zipAlign优化apk,Android sdk包里面的工具，能够对打包的应用程序进行优化，让整个系统运行的更快
             zipAlignEnabled true
@@ -144,9 +147,8 @@ dependencies {
 
     //Glide
     implementation rootProject.ext.dependencies["glide"]
-    implementation (rootProject.ext.dependencies["glide-okhttp-integration"]){
-        exclude group: 'glide-parent'
-    }
+    //使用OkHttp来作为Glide的HTTP通讯组件,添加OkHttp集成库的Gradle依赖将使Glide自动开始使用OkHttp来加载所有来自http和https URL的图片。
+    implementation rootProject.ext.dependencies["glide-okhttp-integration"]
     //在 Kotlin 编写的类里使用 Glide 注解，需要引入一个 kapt 依赖，以代替常规的 annotationProcessor 依赖
     //annotationProcessor rootProject.ext.dependencies["glide-compiler"]
     //相比于Glide 3，这里要多添加一个compiler的库，这个库是用于生成Generated API的。如果不想使用集成库或配置Glide，可跳过此选项。

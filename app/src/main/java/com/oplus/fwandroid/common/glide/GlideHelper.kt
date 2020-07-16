@@ -1,7 +1,6 @@
 package com.oplus.fwandroid.common.glide
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import com.bumptech.glide.GenericTransitionOptions
@@ -9,7 +8,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.DecodeFormat
-import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -22,7 +20,6 @@ import com.bumptech.glide.request.target.Target
 import com.oplus.fwandroid.R
 import com.oplus.fwandroid.common.utils.DensityUtil
 import com.orhanobut.logger.Logger
-import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 import java.lang.ref.WeakReference
 
 /**
@@ -36,123 +33,6 @@ import java.lang.ref.WeakReference
 object GlideHelper {
     open fun load(url: String, image: ImageView?) {
         if (image == null) return
-        var requestOptions = RequestOptions()
-            /**
-             * 加载占位图就是指在图片的加载过程中，我们先显示一张临时的图片，等图片加载出来了再替换成要加载的图片。
-             */
-            .placeholder(R.drawable.ic_default_banner)
-            /**
-             * 异常占位图就是如果因为某些异常情况导致图片加载失败，比如说手机网络信号不好，图片地址不存在，这个时候就显示这张异常占位图。
-             */
-            .error(R.drawable.ic_default_banner)
-            /**
-             * 图片变换：Glide从加载了原始图片到最终展示给用户之前，又进行了一些变换处理，从而能够实现一些更加丰富的图片效果，如图片圆角化、圆形化、模糊化等等。
-             * 在没有明确指定的情况下，ImageView默认的scaleType是FIT_CENTER。所以Glide默认会自动添加一个FitCenter的图片变换，导致图片充满了全屏。
-             * 该方法可以配合override()方法强制指定图片尺寸大小。
-             * transform可传可变参数，即可以同时进行多个变换。
-             * 图片变化开源库：https://github.com/wasabeef/glide-transformations
-             * FitCenter()：将图片按照原始的长宽比充满全屏。
-             * CenterCrop()：对原图的中心区域进行裁剪后得到的图片。
-             * CircleCrop()：对图片进行圆形化裁剪。
-             * RoundedCorners：圆角变换。
-             * CenterInside：视图的大小比原图小时，和FitCenter效果一样；而当视图的大小比原图片时，fitCenter会保持原图比例放大图片去填充View，而centerInside会保持原图大小。
-             * 自定义图片变换，需要继承BitmapTransformation类并实现transform方法。
-             * 大致流程就是先判断缓存池中取出的Bitmap对象是否为空，如果不为空就可以直接使用，如果为空则要创建一个新的Bitmap对象。
-             * 然后对图片进行一系列的变换（圆角化、圆形化、黑白化、模糊化等等），再将复用的Bitmap对象重新放回到缓存池当中，并将变换完成后的图片返回给Glide，最终由Glide将图片显示出来。
-             * final Bitmap toReuse = pool.get(outWidth, outHeight, Bitmap.Config.ARGB_8888);
-             * if (toReuse != null && !pool.put(toReuse)) {
-             *      toReuse.recycle();
-             * }
-             */
-            /**
-             * glide-transformations库提供的变换
-             * Transformations
-             *      MultiTransformation：可传多个Transformation，按迭代顺序进行转换
-             * Crop
-             *      CropTransformation：自定义矩形剪裁，参数 width=剪裁宽度，height=剪裁高度，cropType=剪裁类型（指定剪裁位置，可以选择上、中、下其中一种）
-             *      CropCircleTransformation：圆形剪裁
-             *      CropCircleWithBorderTransformation
-             *      CropSquareTransformation：正方形剪裁
-             *      RoundedCornersTransformation：圆角剪裁，参数 radius=圆角半径，margin=外边距，cornerType=边角类型（可以指定4个角中的哪几个角是圆角，哪几个不是）
-             * Color
-             *      ColorFilterTransformation：颜色滤镜，参数为蒙层颜色码，eg：0x7900CCCC
-             *      GrayscaleTransformation：灰度级转换/黑白化图片
-             * Blur
-             *      BlurTransformation：模糊图片，参数 radius=离散半径/模糊度，默认25，sampling=取样（单参构造器 - 默认1） 如果取2，横向、纵向都会每两个像素点取一个像素点(即:图片宽高变为原来一半)
-             * Mask
-             *      MaskTransformation：遮罩掩饰（视图叠加处理），参数 maskId=遮罩物resID
-             *
-             * 混合变换的3种写法
-             * .transform(CircleCrop(), BlurTransformation(25), GrayscaleTransformation())
-             * .transform(CircleCrop(), MultiTransformation<Bitmap>(BlurTransformation(25), GrayscaleTransformation()))
-             * .transform(MultiTransformation<Bitmap>(CircleCrop(),BlurTransformation(25), GrayscaleTransformation()))
-             */
-//            .transform(CircleCrop())
-            .transform(
-                MultiTransformation<Bitmap>(
-                    RoundedCornersTransformation(
-                        20,
-                        0,
-                        RoundedCornersTransformation.CornerType.ALL
-                    )
-                )
-            )
-            /**
-             * 让Glide在加载图片的过程中不进行图片变换
-             */
-//            .dontTransform()
-            /**
-             * Glide为了方便我们使用直接提供了现成的API。这些内置的图片变换API其实也只是对transform()方法进行了一层封装而已，它们背后的源码仍然还是借助transform()方法来实现的。
-             */
-//            .centerCrop()
-            /**
-             * 定义图片格式
-             * PREFER_ARGB_8888：每个像素使用了4个字节，图片质量更高。（默认）
-             * PREFER_RGB_565：每个像素使用了2个字节，相对减少占用内存。
-             */
-            .format(DecodeFormat.PREFER_RGB_565)
-            /**
-             * 分配加载优先级。Glide将其作为一个指导来最优化处理请求，但并不意味着所有的图片都能按顺序加载。
-             * 递增的方式为Priority.LOW，NORMAL，HIGH，IMMEDIATE。
-             */
-            .priority(Priority.LOW)
-            /**
-             * 移除所有动画，不要显示效果
-             * 对应于.transition(GenericTransitionOptions.with(R.anim.zoom_enter))
-             */
-            .dontAnimate()
-            /**
-             * Glide缓存机制
-            Glide的缓存设计可以说是非常先进的，考虑的场景也很周全。在缓存这一功能上，Glide又将它分成了两个模块，一个是内存缓存，一个是硬盘缓存。
-            这两个缓存模块的作用各不相同，内存缓存的主要作用是防止应用重复将图片数据读取到内存当中，而硬盘缓存的主要作用是防止应用重复从网络或其他地方重复下载和读取数据。
-            内存缓存和硬盘缓存的相互结合才构成了Glide极佳的图片缓存效果
-            缓存的读取主要发生在Engine中的load方法中，其读取的顺序依次为Memory cache、activeResources表、DiskCache 。
-            首次加载的时候通过网络加载，获取图片，然后保存到内存和硬盘中。之后运行APP时优先访问内存中的图片缓存。如果内存没有，则加载磁盘中的图片。
-            决定缓存Key的条件非常多，即使你用override()方法改变了一下图片的width或者height，也会生成一个完全不同的缓存Key。内部主要就是重写了equals()和hashCode()方法，保证只有传入EngineKey的所有参数都相同的情况下才认为是同一个EngineKey对象。
-
-            内存缓存：
-            默认情况下，Glide自动就是开启内存缓存的。也就是说，当我们使用Glide加载了一张图片之后，这张图片就会被缓存到内存当中，只要在它还没从内存中被清除之前，下次使用Glide再加载这张图片都会直接从内存当中读取，而不用重新从网络或硬盘上读取了，这样无疑就可以大幅度提升图片的加载效率。
-            skipMemoryCache(true)：禁用掉Glide的内存缓存功能，比如你想加载GIF图片时。
-            内存缓存的实现，用到LruCache算法（Least Recently Used），也叫近期最少使用算法。它的主要算法原理就是把最近使用的对象用强引用存储在LinkedHashMap中，并且把最近最少使用的对象在缓存值达到预设定值之前从内存中移除。用法见https://blog.csdn.net/guolin_blog/article/details/9316683。
-            Glide的图片加载过程中会调用两个方法来获取内存缓存，这两个方法中一个使用的就是LruCache算法，另一个使用的就是弱引用。
-            当我们从LruCache（LruResourceCache）中获取到缓存图片之后会将它从缓存中移除，然后将这个缓存图片存储到弱引用（activeResources，是一个弱引用的HashMap）当中。使用弱引用来缓存正在使用中的图片，可以保护这些图片不会被LruCache算法回收掉。
-            Glide内存缓存的实现原理：正在使用中的图片使用弱引用来进行缓存，不在使用中的图片使用LruCache来进行缓存的功能。
-
-            硬盘缓存：
-            Glide默认并不会将原始图片展示出来，而是会对图片进行压缩和转换。总之就是经过种种一系列操作之后得到的图片，就叫转换过后的图片。而Glide默认情况下在硬盘缓存的就是转换过后的图片，我们通过调用diskCacheStrategy()方法则可以改变这一默认行为。
-            diskCacheStrategy(DiskCacheStrategy.NONE)：禁用掉Glide的硬盘缓存功能。
-            硬盘缓存的实现也是使用的LruCache算法，而且Google还提供了一个现成的工具类DiskLruCache。
-             */
-            /**
-             * DiskCacheStrategy有五个常量：
-             * DiskCacheStrategy.ALL 使用DATA和RESOURCE缓存远程数据，仅使用RESOURCE来缓存本地数据。
-             * DiskCacheStrategy.NONE 不使用磁盘缓存
-             * DiskCacheStrategy.DATA 在资源解码前就将原始数据写入磁盘缓存
-             * DiskCacheStrategy.RESOURCE 在资源解码后将数据写入磁盘缓存，即经过缩放等转换后的图片资源。
-             * DiskCacheStrategy.AUTOMATIC 根据原始图片数据和资源编码策略来自动选择磁盘缓存策略。（默认策略）
-             */
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-
         GlideApp
             /**
              * with()方法中传入的实例会决定Glide加载图片的生命周期。
@@ -186,6 +66,14 @@ object GlideHelper {
              */
             .load(url)
             /**
+             * 缩略图是一个动态的占位符，会在实际的请求和处理之前显示出来。
+             * thumbnail(sizeMultiplier)这种方式会加载相同的图片作为缩略图，但尺寸为 View 或 Target 的某个百分比。参数是一个浮点数，代表尺寸的倍数。
+             * 它也可以从网络上加载得来。如：.thumbnail(Glide.with(context).load(thumbnailUrl))
+             * Glide 的 thumbnail API 允许你指定一个 RequestBuilder 以与你的主请求并行启动。缩略图会在主请求加载过程中展示。如果主请求在缩略图请求之前完成，则缩略图请求中的图像将不会被展示。
+             * 注意：所有图片请求的设置同样适用于缩略图。例如，你请求某张图片时做了一个灰度变换，或者对图片展示设置了显示动画，那么对于它的缩略图也是同样会生效的。
+             */
+            .thumbnail(0.25f)
+            /**
              * 添加显示动画
              * 在 Glide 中，Transitions (直译为”过渡”) 允许你定义 Glide 如何从占位符到新加载的图片，或从缩略图到全尺寸图像过渡。
              * 不同于 Glide v3，Glide v4 将不会默认应用交叉淡入或任何其他的过渡效果。每个请求必须手动应用过渡。
@@ -198,9 +86,9 @@ object GlideHelper {
              */
             .transition(GenericTransitionOptions.with(R.anim.zoom_enter))
             /**
-             * 运用设置的参数
+             * 运用设置的参数requestOptions
              */
-            .apply(requestOptions)
+//            .apply(requestOptions)
             /**
              * 用来监听Glide加载图片的状态。需要结合into或preload方法一起使用的。
              */
@@ -246,9 +134,9 @@ object GlideHelper {
              */
 //            .submit()
             /**
-             * 自定义的API，你可以在其中封装某些公共的方法。
+             * 自定义的API，你可以在其中封装某些公共的方法或者自定义方法。
              */
-            .cacheSource()
+//            .cacheSource()
             .into(object : DrawableImageViewTarget(image) {
             })
     }

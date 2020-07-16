@@ -6,8 +6,6 @@ ext {
             applicationId    : "com.oplus.fwandroid",
             minSdkVersion    : 16,
             targetSdkVersion : 29,
-            versionCode      : 1,
-            versionName      : "1.0"
     ]
 
     depsVersion = [

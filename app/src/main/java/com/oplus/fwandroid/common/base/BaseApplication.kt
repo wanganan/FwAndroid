@@ -45,7 +45,7 @@ open class BaseApplication : Application() {
             .methodCount(0) // (Optional) How many method line to show. Default 2
             .methodOffset(7) // (Optional) Hides internal method calls up to offset. Default 5
             .logStrategy(LogcatLogStrategy()) // (Optional) Changes the log strategy to print out. Default LogCat
-            .tag(Global.APPNAME) // (Optional) Global tag for every log. Default PRETTY_LOGGER
+            .tag(BuildConfig.APPLICATION_ID) // (Optional) Global tag for every log. Default PRETTY_LOGGER
             .build()
         Logger.addLogAdapter(object : AndroidLogAdapter(formatStrategy) {
             override fun isLoggable(priority: Int, tag: String?): Boolean {
