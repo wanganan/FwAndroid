@@ -1,25 +1,24 @@
 package com.oplus.fwandroid.common.glide
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.view.ViewGroup
 import android.widget.ImageView
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
-import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.DecodeFormat
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.DrawableImageViewTarget
 import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.transition.Transition
 import com.oplus.fwandroid.R
-import com.oplus.fwandroid.common.utils.DensityUtil
 import com.orhanobut.logger.Logger
+import jp.wasabeef.glide.transformations.*
 import java.lang.ref.WeakReference
 
 /**
@@ -31,8 +30,41 @@ import java.lang.ref.WeakReference
  * version: 1.0
  */
 object GlideHelper {
+    fun display(context: Context, viewGroup: ViewGroup, source: Any) {}
+    fun preload(context: Context, imageView: ImageView, source: Any) {}
+    fun display(context: Context, imageView: ImageView, source: Any) {}
+    fun display(context: Context, imageView: ImageView, transformation: MultiTransformation<Bitmap>) {}
+    fun displayRoundedCornersImage(context: Context, imageView: ImageView, radius: Int=10) {}
+    fun displayBlurImage(context: Context, imageView: ImageView, radius: Int=25) {}
+    fun displayGrayscaleImage(context: Context, imageView: ImageView) {}
+    fun displayColorFilterImage(context: Context, imageView: ImageView, color: Int) {}
+    fun displayCircleImage(context: Context, imageView: ImageView,borderColor:Int= Color.BLACK) {}
+    fun displaySquareImage(context: Context, imageView: ImageView) {}
+    fun display(context: Context, imageView: ImageView, source: Any,placeholderResourceId:Int,errorResourceId:Int,fallbackResourceId:Int) {}
+    fun display(context: Context, imageView: ImageView, source: Any,thumbnailSizeMultiplier:Float) {}
+    fun display(context: Context, imageView: ImageView, source: Any,viewAnimationId:Int) {}
+    fun display(context: Context, imageView: ImageView, source: Any,requestOptions:RequestOptions) {}
+    fun display(context: Context, imageView: ImageView, source: Any,requestListener:RequestListener<Drawable?>) {}
+    fun display(context: Context, imageView: ImageView, source: Any,width:Int,height: Int) {}
+
     open fun load(url: String, image: ImageView?) {
         if (image == null) return
+
+        //RequestOptions的默认配置及详情见GlideConfig
+        var requestOptions = RequestOptions()
+            .placeholder(R.drawable.ic_default_icon)
+            .error(R.drawable.ic_default_icon)
+            .fallback(R.drawable.ic_default_icon)
+            .dontTransform()
+            .transform(RoundedCornersTransformation(10, 0, RoundedCornersTransformation.CornerType.ALL))
+            .transform(BlurTransformation(25))
+            .transform(GrayscaleTransformation())
+            .transform(ColorFilterTransformation(0x7900CCCC))
+            .transform(CropCircleWithBorderTransformation())
+            .transform(CropSquareTransformation())
+            .dontAnimate()
+            .override(100,100)
+
         GlideApp
             /**
              * with()方法中传入的实例会决定Glide加载图片的生命周期。
@@ -64,7 +96,7 @@ object GlideHelper {
              * Uri imageUri = getImageUri();
              * Glide.with(this).load(imageUri).into(imageView);
              */
-            .load(url)
+            .load(GlideURL(url))
             /**
              * 缩略图是一个动态的占位符，会在实际的请求和处理之前显示出来。
              * thumbnail(sizeMultiplier)这种方式会加载相同的图片作为缩略图，但尺寸为 View 或 Target 的某个百分比。参数是一个浮点数，代表尺寸的倍数。
@@ -78,6 +110,7 @@ object GlideHelper {
              * 在 Glide 中，Transitions (直译为”过渡”) 允许你定义 Glide 如何从占位符到新加载的图片，或从缩略图到全尺寸图像过渡。
              * 不同于 Glide v3，Glide v4 将不会默认应用交叉淡入或任何其他的过渡效果。每个请求必须手动应用过渡。
              * 可以通过使用 BitmapTransitionOptions 或 DrawableTransitionOptions 来指定类型特定的过渡动画。对于 Bitmap 和 Drawable 之外的资源类型，可以使用 GenericTransitionOptions。
+             * 如.transition(DrawableTransitionOptions.withCrossFade(100))//淡入淡出100m
              *
              * Android 中的动画代价是比较大的，尤其是同时开始大量动画的时候。 交叉淡入和其他涉及 alpha (透明度) 变化的动画显得尤其昂贵。
              * 此外，动画通常比图片解码本身还要耗时。在列表和网格中滥用动画可能会让图像的加载显得缓慢而卡顿。
@@ -88,7 +121,7 @@ object GlideHelper {
             /**
              * 运用设置的参数requestOptions
              */
-//            .apply(requestOptions)
+            .apply(requestOptions)
             /**
              * 用来监听Glide加载图片的状态。需要结合into或preload方法一起使用的。
              */
@@ -136,110 +169,60 @@ object GlideHelper {
             /**
              * 自定义的API，你可以在其中封装某些公共的方法或者自定义方法。
              */
-//            .cacheSource()
-            .into(object : DrawableImageViewTarget(image) {
-            })
-    }
-
-    open fun load(url: String, image: ImageView?, width: Int, height: Int) {
-        if (image == null) return
-        var lp = image.layoutParams
-        lp.width = width
-        lp.height = height
-        image.layoutParams = lp
-        var requestOptions = RequestOptions().centerCrop()
-            .placeholder(R.drawable.ic_default_banner)
+//            .miniThumb()
             /**
-             * 我们平时在加载图片的时候很容易会造成内存浪费。什么叫内存浪费呢？比如说一张图片的尺寸是1000*1000像素，但是我们界面上的ImageView可能只有200*200像素，这个时候如果你不对图片进行任何压缩就直接读取到内存中，这就属于内存浪费了，因为程序中根本就用不到这么高像素的图片。
-             * 而使用Glide，我们就完全不用担心图片内存浪费，甚至是内存溢出的问题。因为Glide从来都不会直接将图片的完整尺寸全部加载到内存中，而是用多少加载多少。
-             * Glide会自动判断ImageView的大小，然后只将这么大的图片像素加载到内存当中，帮助我们节省内存开支，以此保证图片不会占用过多的内存从而引发OOM。
-             * 正是因为Glide是如此的智能，实际上，使用Glide在大多数情况下我们都是不需要指定图片大小的。
-             * 使用override()方法指定了一个图片的尺寸。也就是说，Glide现在只会将图片加载成width*height像素的尺寸，而不会管你的ImageView的大小是多少了。
-             * 如果你想加载一张图片的原始尺寸的话，可以使用Target.SIZE_ORIGINAL关键字。override(Target.SIZE_ORIGINAL)，当然，这种写法也会面临着更高的OOM风险。
+             * 设置资源将加载到的目标。
              */
-            .override(width, height)
-            .format(DecodeFormat.PREFER_RGB_565)
-            .error(R.drawable.ic_default_banner)
-            .transform(CenterCrop())
-            .dontAnimate()
-            .priority(Priority.LOW)
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-
-        GlideApp.with(image.context)
-            .load(url)
-            .apply(requestOptions)
             .into(object : DrawableImageViewTarget(image) {
-            })
-    }
 
-    open fun loadCircle(url: String, image: ImageView?) {
-        if (image == null) return
-        var lp = image.layoutParams
-        lp.width = DensityUtil.dp2px(image.context.applicationContext, 40f)
-        lp.height = DensityUtil.dp2px(image.context.applicationContext, 40f)
-        image.layoutParams = lp
-        var requestOptions = RequestOptions().centerCrop()
-            .placeholder(R.drawable.ic_default_icon)
-            .error(R.drawable.ic_default_icon)
-            .format(DecodeFormat.PREFER_RGB_565)
-            .transform(CenterCrop())
-            .override(lp.width)
-            .dontAnimate()
-            .priority(Priority.LOW)
-            .transform(CircleCrop())
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                //加载时调用生命周期回调,取消了和它的资源释放。一般情况不需要我们操作。
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    super.onLoadCleared(placeholder)
+                }
 
-        GlideApp.with(image.context)
-            .load(url)
-            .apply(requestOptions)
-            .into(object : DrawableImageViewTarget(image) {
-            })
-    }
+                //加载失败回调，根据需求，可在当前方法中进行图片加载失败的后续操作。
+                override fun onLoadFailed(errorDrawable: Drawable?) {
+                    super.onLoadFailed(errorDrawable)
+                }
 
-    open fun load(url: String, image: ImageView?, width: Int, height: Int, round: Int) {
-        if (image == null) return
-        var lp = image.layoutParams
-        lp.width = width
-        lp.height = height
-        image.layoutParams = lp
-        var requestOptions = RequestOptions().centerCrop()
-            .placeholder(R.drawable.ic_default_banner)
-            .error(R.drawable.ic_default_banner)
-            .format(DecodeFormat.PREFER_RGB_565)
-            .override(width, height)
-            .priority(Priority.LOW)
-            .dontAnimate()
-            .transform(
-                CenterCrop(),
-                RoundedCorners(DensityUtil.dp2px(image.context.applicationContext, round.toFloat()))
-            )
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                //开始加载图片，可在当前方法中进行加载图片的初始操作。比如，显示加载进度条。
+                override fun onLoadStarted(placeholder: Drawable?) {
+                    super.onLoadStarted(placeholder)
+                }
 
-        GlideApp.with(image.context)
-            .load(url)
-            .apply(requestOptions)
-            .into(object : DrawableImageViewTarget(image) {
-            })
-    }
+                //资源加载完成后将被调用的方法。
+                override fun onResourceReady(
+                    resource: Drawable,
+                    transition: Transition<in Drawable>?
+                ) {
+                    super.onResourceReady(resource, transition)
+                }
 
-    open fun loadRound(url: String, image: ImageView?, round: Int) {
-        if (image == null) return
-        var requestOptions = RequestOptions().centerCrop()
-            .placeholder(R.drawable.ic_default_banner)
-            .error(R.drawable.ic_default_banner)
-            .format(DecodeFormat.PREFER_RGB_565)
-            .priority(Priority.LOW)
-            .dontAnimate()
-            .transform(
-                CenterCrop(),
-                RoundedCorners(DensityUtil.dp2px(image.context.applicationContext, round.toFloat()))
-            )
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                //返回使用ImageView.getDrawable()在视图中显示的当前Drawable。
+                override fun getCurrentDrawable(): Drawable? {
+                    return super.getCurrentDrawable()
+                }
 
-        GlideApp.with(image.context)
-            .load(url)
-            .apply(requestOptions)
-            .into(object : DrawableImageViewTarget(image) {
+                //设置占位图 drawable 显示在当前 ImageView，注释super方法后不会显示加载占位图。
+                override fun setDrawable(drawable: Drawable?) {
+                    super.setDrawable(drawable)
+                }
+
+                //设置加载完毕的 drawable 显示在当前 ImageView，注释super方法后不会显示资源加载完毕的图。
+                override fun setResource(resource: Drawable?) {
+                    super.setResource(resource)
+                }
+
+                //当Fragment.onStart()或Activity.onStart()被调用时回调。
+                override fun onStart() {
+                    super.onStart()
+                }
+
+                //当Fragment.onStop()或Activity.onStop()被调用时回调。
+                override fun onStop() {
+                    super.onStop()
+                }
+
             })
     }
 

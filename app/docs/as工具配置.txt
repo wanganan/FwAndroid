@@ -1,0 +1,50 @@
+git提交代码
+git add .    //指定更新内容    . 表示全部更新，test.txt 表示更新指定文件
+git commit -m "一些注释说明" 
+git push origin master 
+
+git拉取代码
+$ git pull origin master
+
+git删除文件夹/文件
+可配合.gitignore提交，Module的过滤可在module下添加.gitignore文件
+在包含要删除文件的目录下打开gitbash
+git rm -r .idea --cached（文件夹）
+git rm .idea --cached（文件）
+git commit -m '删除不必要的文件'
+git push origin master
+
+快捷键：
+Delete Line : Ctrl+D
+Start New Line : Shift+Enter
+Reformat code : Ctrl+Alt+F
+Replace : Ctrl+R
+代码提示 : Alt+/
+参数提示 : Ctrl+P
+Move Line Up/Down : Alt+↑/↓
+Duplicate Line or Selection : Ctrl+Alt+↓
+Generate... : Alt+Insert
+Field... : Ctrl+Alt+F
+Surround With... : Ctrl+Alt+T
+Method... : Ctrl+Alt+M
+
+类注释：Settings-Editor-File and Code Templates-Includes-File Header
+/**
+ * @author Sinaan
+ * @date ${DATE}
+ * GitHub：https://github.com/wanganan
+ * email：waa182838@sina.com
+ * description：
+ * version: 1.0
+ */
+
+方法注释(只适用java)：Settings-Editor-Live Templates-+-Template Group...-输入FunctionTemplate-+-Live Template-设置Abbreviation为funt
+-下方Change-选择java下的Declaration即可-OK
+funt为注释的快捷键，当在方法的上方输入cmd时，即可出现注释。
+/**
+ * @description $desc$
+ * @param $methodParameters$
+ * @return $methodReturnType$
+ */
+自动导包：Settings-Editor-General-Auto Import-在对应语言下勾选Add unambiguous...
+自动删除无用包：Settings-Editor-General-Auto Import-在对应语言下勾选Optimize imports...

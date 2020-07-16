@@ -279,10 +279,10 @@ https://juejin.im/post/5d1717996fb9a07eeb13bc95
 ——————————————————————————————————————————————————
 >>>Glide
 https://github.com/bumptech/glide
+图片变换开源库：https://github.com/wasabeef/glide-transformations
 Glide v3,v4区别：https://muyangmin.github.io/glide-docs-cn/doc/migrating.html
 解析系列：https://blog.csdn.net/guolin_blog/article/details/53759439
 图片加载oom解决：https://blog.csdn.net/guolin_blog/article/details/9316683
-图片变换开源库：https://github.com/wasabeef/glide-transformations
 Glide是一款由Bump Technologies开发的图片加载框架，使得我们可以在Android平台上以极度简单的方式加载和展示图片。
 Min Sdk Version>=14，Compile Sdk Version>=27
 Support Library Version - Glide 使用的支持库版本为 27。

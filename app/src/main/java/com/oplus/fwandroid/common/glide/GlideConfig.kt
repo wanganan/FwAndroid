@@ -28,7 +28,7 @@ object GlideConfig {
             .placeholder(R.drawable.ic_default_icon)
             /**
              * 异常占位图就是如果因为某些异常情况导致图片加载失败，比如说手机网络信号不好，图片地址不存在，这个时候就显示这张异常占位图。
-             * 如果没有设置异，就展示placeholder的占位图
+             * 如果没有设置，就展示placeholder的占位图
              */
             .error(R.drawable.ic_default_icon)
             /**
@@ -61,8 +61,8 @@ object GlideConfig {
              *      MultiTransformation：可传多个Transformation，按迭代顺序进行转换
              * Crop
              *      CropTransformation：自定义矩形剪裁，参数 width=剪裁宽度，height=剪裁高度，cropType=剪裁类型（指定剪裁位置，可以选择上、中、下其中一种）
-             *      CropCircleTransformation：圆形剪裁
-             *      CropCircleWithBorderTransformation
+             *      CropCircleTransformation：圆形剪裁，已过时
+             *      CropCircleWithBorderTransformation：圆形剪裁，可设置圆形边界尺寸和颜色。参数 borderSize=边界尺寸，默认4px，borderColor=边界颜色，默认黑色。
              *      CropSquareTransformation：正方形剪裁
              *      RoundedCornersTransformation：圆角剪裁，参数 radius=圆角半径，margin=外边距，cornerType=边角类型（可以指定4个角中的哪几个角是圆角，哪几个不是）
              * Color
@@ -74,6 +74,7 @@ object GlideConfig {
              *      MaskTransformation：遮罩掩饰（视图叠加处理），参数 maskId=遮罩物resID
              *
              * 混合变换的3种写法
+             * 多个.transform的链式调用仅以最后一个为准，所以如果想实现混合变换的话，要把变换的策略都写在transform参数中。
              * .transform(CircleCrop(), BlurTransformation(25), GrayscaleTransformation())
              * .transform(CircleCrop(), MultiTransformation<Bitmap>(BlurTransformation(25), GrayscaleTransformation()))
              * .transform(MultiTransformation<Bitmap>(CircleCrop(),BlurTransformation(25), GrayscaleTransformation()))
@@ -109,6 +110,16 @@ object GlideConfig {
              * 对应于.transition(GenericTransitionOptions.with(R.anim.zoom_enter))
              */
             .dontAnimate()
+            /**
+             * 我们平时在加载图片的时候很容易会造成内存浪费。什么叫内存浪费呢？比如说一张图片的尺寸是1000*1000像素，但是我们界面上的ImageView可能只有200*200像素，这个时候如果你不对图片进行任何压缩就直接读取到内存中，这就属于内存浪费了，因为程序中根本就用不到这么高像素的图片。
+             * 而使用Glide，我们就完全不用担心图片内存浪费，甚至是内存溢出的问题。因为Glide从来都不会直接将图片的完整尺寸全部加载到内存中，而是用多少加载多少。
+             * Glide会自动判断ImageView的大小，然后只将这么大的图片像素加载到内存当中，帮助我们节省内存开支，以此保证图片不会占用过多的内存从而引发OOM。
+             * 正是因为Glide是如此的智能，实际上，使用Glide在大多数情况下我们都是不需要指定图片大小的。
+             * 使用override()方法指定了一个图片的尺寸。也就是说，Glide现在只会将图片加载成width*height像素的尺寸，而不会管你的ImageView的大小是多少了。
+             * 如果你想加载一张图片的原始尺寸的话，可以使用Target.SIZE_ORIGINAL关键字。override(Target.SIZE_ORIGINAL)，当然，这种写法也会面临着更高的OOM风险。
+             * 这里写成(0,0)是为了方便统一说明，Glide内部已经解释为无效的了。
+             */
+            .override(0, 0)
             /**
              * Glide缓存机制
             Glide的缓存设计可以说是非常先进的，考虑的场景也很周全。在缓存这一功能上，Glide又将它分成了两个模块，一个是内存缓存，一个是硬盘缓存。
@@ -165,6 +176,7 @@ object GlideConfig {
              * 当signature方法中的Key参数改变的时候应用的所有图片都需要重新加载。Key参数可以是版本号，日期等，对应的是一个版本刷新一次，或者隔一段时间刷新一次。
              * 传入参数为实现Key接口的类对象，Glide中有三个类ObjectKey（文件-文件修改日期，URI-版本号），MediaStoreSignature（媒体存储内容），EmptySignature。
              * 具体参见官网：https://muyangmin.github.io/glide-docs-cn/doc/caching.html。
+             * 这里是每次更换版本的时候刷新缓存。
              */
             .signature(ObjectKey(BuildConfig.VERSION_NAME))
             /**

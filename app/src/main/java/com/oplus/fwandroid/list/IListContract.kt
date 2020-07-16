@@ -1,10 +1,8 @@
 package com.oplus.fwandroid.list
 
-import com.oplus.fwandroid.A
 import com.oplus.fwandroid.common.base.BasePresenter
 import com.oplus.fwandroid.common.base.BaseView
 import com.oplus.fwandroid.common.bean.GoodsList
-import io.reactivex.rxjava3.core.FlowableTransformer
 
 /**
  * @author Sinaan

@@ -2,7 +2,6 @@ package com.oplus.fwandroid.common.glide
 
 import com.bumptech.glide.annotation.GlideExtension
 import com.bumptech.glide.annotation.GlideOption
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.BaseRequestOptions
 
 
@@ -27,13 +26,7 @@ object GlideApi {
     //缩略图的最小尺寸，单位：px
     private const val MINI_THUMB_SIZE = 100
 
-    @JvmStatic
-    @JvmOverloads
-    @GlideOption
-    fun cacheSource(options: BaseRequestOptions<*>): BaseRequestOptions<*> {
-        return options.diskCacheStrategy(DiskCacheStrategy.DATA)
-    }
-
+    //生成一个最小缩略图
     @JvmStatic
     @JvmOverloads
     @GlideOption
