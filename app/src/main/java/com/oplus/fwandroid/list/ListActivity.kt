@@ -35,7 +35,7 @@ class ListActivity : BaseListActivity<GoodsList>(),
     }
 
     override fun style(): Int {
-        return Style.TRIPLE
+        return Style.DOUBLE
     }
 
     override fun showDivider(): Boolean {

@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit
  * Generated API 默认名为 GlideApp ，与 Application 模块中 AppGlideModule的子类包名相同。
  * 在 Application 模块中将 Glide.with() 替换为 GlideApp.with()，即可使用该 API 去完成加载工作.
  * GlideApp是通过编译时注解自动生成的，如果未找到GlideApp，可以在Android Studio中点击菜单栏Build -> Rebuild Project，GlideApp这个类就会自动生成了。
- * 与 Glide.with() 不同，诸如 fitCenter() 和 placeholder() 等选项在 Builder 中直接可用，并不需要再传入单独的 RequestOptions 对象。 ​
+ * 与 Glide.with() 不同，诸如 fitCenter() 和 placeholder() 等选项在 RequestBuilder/GlideApp.with().load() 后直接可用，并不需要再传入单独的 RequestOptions 对象。 ​
  * Glide定制的自己的API见CommonGlideExtension类。
  */
 @GlideModule
@@ -108,7 +108,7 @@ class GlideModule : AppGlideModule() {
      * 这里可以手工的将Glide的HTTP通讯组件替换成OkHttp，详见https://blog.csdn.net/guolin_blog/article/details/78179422。
      * 也可以利用Glide官方给我们提供的非常简便的HTTP组件替换方式。只需要在gradle当中添加库的配置就行了。
      * 添加OkHttp集成库的Gradle依赖将使Glide自动开始使用OkHttp来加载所有来自http和https URL的图片。
-     * compile 'com.github.bumptech.glide:okhttp3-integration:1.5.0@aar'
+     * implementation "com.github.bumptech.glide:okhttp3-integration:x.x.x"
      */
     override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
         super.registerComponents(context, glide, registry)

@@ -1,69 +1,87 @@
 package com.oplus.fwandroid.common.glide
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Environment
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.MultiTransformation
+import com.bumptech.glide.load.Transformation
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.BitmapImageViewTarget
 import com.bumptech.glide.request.target.DrawableImageViewTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
-import com.oplus.fwandroid.R
+import com.oplus.fwandroid.common.net.RxHelper
+import com.oplus.fwandroid.common.utils.FileUtil
 import com.orhanobut.logger.Logger
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.BackpressureStrategy
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import jp.wasabeef.glide.transformations.*
+import jp.wasabeef.glide.transformations.internal.Utils
+import java.io.File
 import java.lang.ref.WeakReference
+import java.net.URL
 
 /**
  * @author Sinaan
  * @date 2020/7/14
  * GitHub：https://github.com/wanganan
  * email：waa182838@sina.com
- * description：图片加载工具类
+ * description：图片加载工具类，方法描述详见display(imageView: ImageView, url: String)。
  * version: 1.0
+ *
+ * Glide在这些工具方法前已经设置过默认配置，见GlideModule。RequestOptions的默认配置及详情见GlideConfig。
+ * 这里设置的选项都仅仅覆盖默认设置的冲突选项，共通的方法配置在了GlideConfig中。
  */
-object GlideHelper {
-    fun display(context: Context, viewGroup: ViewGroup, source: Any) {}
-    fun preload(context: Context, imageView: ImageView, source: Any) {}
-    fun display(context: Context, imageView: ImageView, source: Any) {}
-    fun display(context: Context, imageView: ImageView, transformation: MultiTransformation<Bitmap>) {}
-    fun displayRoundedCornersImage(context: Context, imageView: ImageView, radius: Int=10) {}
-    fun displayBlurImage(context: Context, imageView: ImageView, radius: Int=25) {}
-    fun displayGrayscaleImage(context: Context, imageView: ImageView) {}
-    fun displayColorFilterImage(context: Context, imageView: ImageView, color: Int) {}
-    fun displayCircleImage(context: Context, imageView: ImageView,borderColor:Int= Color.BLACK) {}
-    fun displaySquareImage(context: Context, imageView: ImageView) {}
-    fun display(context: Context, imageView: ImageView, source: Any,placeholderResourceId:Int,errorResourceId:Int,fallbackResourceId:Int) {}
-    fun display(context: Context, imageView: ImageView, source: Any,thumbnailSizeMultiplier:Float) {}
-    fun display(context: Context, imageView: ImageView, source: Any,viewAnimationId:Int) {}
-    fun display(context: Context, imageView: ImageView, source: Any,requestOptions:RequestOptions) {}
-    fun display(context: Context, imageView: ImageView, source: Any,requestListener:RequestListener<Drawable?>) {}
-    fun display(context: Context, imageView: ImageView, source: Any,width:Int,height: Int) {}
+object GlideHelper : IImageLoader {
 
-    open fun load(url: String, image: ImageView?) {
-        if (image == null) return
+    /**
+     * 这里贴了每个方法详细的说明，所以东西看起来比较多，实际这个方法只是这一句话。
+     * GlideApp.with(imageView.context).load(GlideURL(url)).into(imageView)
+     */
+    override fun display(imageView: ImageView, url: String) {
 
-        //RequestOptions的默认配置及详情见GlideConfig
-        var requestOptions = RequestOptions()
-            .placeholder(R.drawable.ic_default_icon)
-            .error(R.drawable.ic_default_icon)
-            .fallback(R.drawable.ic_default_icon)
-            .dontTransform()
-            .transform(RoundedCornersTransformation(10, 0, RoundedCornersTransformation.CornerType.ALL))
-            .transform(BlurTransformation(25))
-            .transform(GrayscaleTransformation())
-            .transform(ColorFilterTransformation(0x7900CCCC))
-            .transform(CropCircleWithBorderTransformation())
-            .transform(CropSquareTransformation())
-            .dontAnimate()
-            .override(100,100)
+        //这里为了统一说明列出了RequestOptions的所有方法，不传的话使用默认配置。
+        //在GlideApp中，这些方法均可移到load()下，无需再传入单独的 RequestOptions 对象。 ​
+//        var requestOptions = RequestOptions()
+//            .placeholder(R.drawable.ic_default_icon)
+//            .error(R.drawable.ic_default_icon)
+//            .fallback(R.drawable.ic_default_icon)
+//            .transform(CenterCrop())
+//            .transform(RoundedCornersTransformation(10, 0, RoundedCornersTransformation.CornerType.ALL))
+//            .transform(BlurTransformation(25))
+//            .transform(GrayscaleTransformation())
+//            .transform(ColorFilterTransformation(0x7900CCCC))
+//            .transform(CropCircleWithBorderTransformation())
+//            .transform(CropSquareTransformation())
+//            .transform(CircleCrop(), BlurTransformation(25), GrayscaleTransformation())
+//            .transform(CircleCrop(), MultiTransformation<Bitmap>(BlurTransformation(25), GrayscaleTransformation()))
+//            .transform(MultiTransformation<Bitmap>(CircleCrop(),BlurTransformation(25), GrayscaleTransformation()))
+//            .centerCrop()
+//            .dontTransform()
+//            .format(DecodeFormat.PREFER_RGB_565)
+//            .priority(Priority.LOW)
+//            .dontAnimate()
+//            .override(100,100)
+//            .override(100)
+//            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+//            .skipMemoryCache(false)
+//            .onlyRetrieveFromCache(true)
+//            .signature(ObjectKey(BuildConfig.VERSION_NAME))
+//            .disallowHardwareConfig()
 
         GlideApp
             /**
@@ -71,18 +89,23 @@ object GlideHelper {
              * 如果传入的是Activity或者Fragment的实例，那么当这个Activity或Fragment被销毁的时候，图片加载也会停止。
              * 如果传入的是ApplicationContext，那么只有当应用程序被杀掉的时候，图片加载才会停止。
              */
-            .with(image.context)
+            .with(imageView.context)
             /**
              * Glide其中一个非常亮眼的功能就是可以加载GIF图片，而同样作为非常出色的图片加载框架的Picasso是不支持这个功能的。Jake Warton曾经明确表示过，Picasso是不会支持加载GIF图片的。
              * Glide加载GIF图并不需要编写什么额外的代码，Glide内部会自动判断图片格式。
              * asBitmap()的意思就是说这里只允许加载静态图片，不需要Glide去帮我们自动进行图片格式的判断了。如果你传入的还是一张GIF图的话，Glide会展示这张GIF图的第一帧，而不会去播放它。
              * asGif() 指定了只允许加载动态图片，如果指定了只能加载动态图片，而传入的图片却是一张静图的话，那么结果自然就只有加载失败。
+             * asXXX会影响listener或Target中的参数，可以用来获取指定的图片格式（Bitmap、Drawable）。
              * Glide 4中又新增了asFile()方法和asDrawable()方法，分别用于强制指定文件格式的加载和Drawable格式的加载。
              * 注意：在Glide 3中的语法是先load()再asBitmap()的，而在Glide 4中是先asBitmap()再load()的。如果你写错了顺序就肯定会报错了。
              */
 //            .asBitmap()
+//            .asGif()
+//            .asDrawable()
+//            .asFile()
             /**
              * load方法用于指定待加载的图片资源。Glide支持加载各种各样的图片资源，包括网络图片、本地图片、应用资源、二进制流、Uri对象等等。
+             * 这里用GlideURL包装url是为了解决 “图片不变，但地址发生变化” 的问题
              * // 加载本地图片
              * File file = new File(getExternalCacheDir() + "/image.jpg");
              * Glide.with(this).load(file).into(imageView);
@@ -97,6 +120,7 @@ object GlideHelper {
              * Glide.with(this).load(imageUri).into(imageView);
              */
             .load(GlideURL(url))
+//            .transform(ColorFilterTransformation(0x7900CCCC))
             /**
              * 缩略图是一个动态的占位符，会在实际的请求和处理之前显示出来。
              * thumbnail(sizeMultiplier)这种方式会加载相同的图片作为缩略图，但尺寸为 View 或 Target 的某个百分比。参数是一个浮点数，代表尺寸的倍数。
@@ -104,7 +128,8 @@ object GlideHelper {
              * Glide 的 thumbnail API 允许你指定一个 RequestBuilder 以与你的主请求并行启动。缩略图会在主请求加载过程中展示。如果主请求在缩略图请求之前完成，则缩略图请求中的图像将不会被展示。
              * 注意：所有图片请求的设置同样适用于缩略图。例如，你请求某张图片时做了一个灰度变换，或者对图片展示设置了显示动画，那么对于它的缩略图也是同样会生效的。
              */
-            .thumbnail(0.25f)
+//            .thumbnail(0.25f)
+//            .thumbnail(Glide.with(context).load(thumbnailUrl))
             /**
              * 添加显示动画
              * 在 Glide 中，Transitions (直译为”过渡”) 允许你定义 Glide 如何从占位符到新加载的图片，或从缩略图到全尺寸图像过渡。
@@ -117,11 +142,13 @@ object GlideHelper {
              * 为了提升性能，请在使用 Glide 向 ListView , GridView, 或 RecyclerView 加载图片时考虑避免使用动画，
              * 尤其是大多数情况下，你希望图片被尽快缓存和加载的时候。作为替代方案，请考虑预加载，这样当用户滑动到具体的 item 的时候，图片已经在内存中了。
              */
-            .transition(GenericTransitionOptions.with(R.anim.zoom_enter))
+//            .transition(GenericTransitionOptions.with(R.anim.zoom_enter))
+//            .transition(DrawableTransitionOptions.withCrossFade(100))
             /**
              * 运用设置的参数requestOptions
+             * RequestOptions的默认配置及详情见GlideConfig
              */
-            .apply(requestOptions)
+//            .apply(requestOptions)
             /**
              * 用来监听Glide加载图片的状态。需要结合into或preload方法一起使用的。
              */
@@ -173,7 +200,7 @@ object GlideHelper {
             /**
              * 设置资源将加载到的目标。
              */
-            .into(object : DrawableImageViewTarget(image) {
+            .into(object : DrawableImageViewTarget(imageView) {
 
                 //加载时调用生命周期回调,取消了和它的资源释放。一般情况不需要我们操作。
                 override fun onLoadCleared(placeholder: Drawable?) {
@@ -224,6 +251,347 @@ object GlideHelper {
                 }
 
             })
+    }
+
+    override fun display(imageView: ImageView, url: String, placedResId: Int) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .placeholder(placedResId)
+            .error(placedResId)
+            .fallback(placedResId)
+            .into(imageView)
+    }
+
+    override fun display(imageView: ImageView, url: URL) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url.toString()))
+            .into(imageView)
+    }
+
+    override fun display(imageView: ImageView, uri: Uri) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(uri.toString()))
+            .into(imageView)
+    }
+
+    override fun display(imageView: ImageView, drawable: Drawable) {
+        GlideApp
+            .with(imageView.context)
+            .load(drawable)
+            .into(imageView)
+    }
+
+    override fun display(imageView: ImageView, bitmap: Bitmap) {
+        GlideApp
+            .with(imageView.context)
+            .load(bitmap)
+            .into(imageView)
+    }
+
+    override fun display(imageView: ImageView, bytes: ByteArray) {
+        GlideApp
+            .with(imageView.context)
+            .load(bytes)
+            .into(imageView)
+    }
+
+    override fun display(imageView: ImageView, resId: Int) {
+        GlideApp
+            .with(imageView.context)
+            .load(resId)
+            .into(imageView)
+    }
+
+    override fun display(viewGroup: ViewGroup, url: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun preload(imageView: ImageView, url: String) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .preload()
+    }
+
+    override fun loadDrawable(
+        imageView: ImageView,
+        url: String,
+        drawableImageViewTarget: DrawableImageViewTarget
+    ) {
+        GlideApp
+            .with(imageView.context)
+            .asDrawable()//可省略
+            .load(GlideURL(url))
+            .into(drawableImageViewTarget)
+    }
+
+    override fun loadBitmap(
+        imageView: ImageView,
+        url: String,
+        bitmapImageViewTarget: BitmapImageViewTarget
+    ) {
+        GlideApp
+            .with(imageView.context)
+            .asBitmap()
+            .load(GlideURL(url))
+            .into(bitmapImageViewTarget)
+    }
+
+    override fun download(imageView: ImageView, url: String, saveDir: File) {
+        val fileName = System.currentTimeMillis().toString() + ".jpg"
+        val destFile = File(saveDir, fileName)
+        Logger.e("path:"+destFile.absolutePath)
+
+        Flowable.create<File>({ e ->
+            e.onNext(
+                Glide.with(imageView.context)
+                    .asFile()
+                    .load(url)
+                    .submit()
+                    .get()
+            )
+            e.onComplete()
+        }, BackpressureStrategy.BUFFER)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .compose(RxHelper.bindFlowableLifeCycle(imageView.context))
+            .subscribe { file ->
+                FileUtil.moveFile(file!!, destFile)
+
+                // 最后通知图库更新
+                imageView.context.sendBroadcast(
+                    Intent(
+                        Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                        Uri.fromFile(destFile)
+                    )
+                )
+            }
+    }
+
+    override fun download(imageView: ImageView, url: String) {
+        val saveDir =
+            File(Environment.getExternalStorageDirectory(), "glide")
+        if (!saveDir.exists()) {
+            saveDir.mkdir()
+        }
+        download(imageView, url, saveDir)
+    }
+
+    /**
+     * gif图片不需要缓存。
+     * 这里没必要写asGif()，一是Glide会自动识别，二是为了防止指定gif图而传入静态图片所造成的图片不显示的问题，不指定是为了保持界面优雅。
+     */
+    override fun displayGif(imageView: ImageView, url: String) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .skipMemoryCache(true)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .into(imageView)
+    }
+
+    override fun displayGif(imageView: ImageView, resId: Int) {
+        GlideApp
+            .with(imageView.context)
+            .load(resId)
+            .skipMemoryCache(true)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .into(imageView)
+    }
+
+    /**
+     * 获取layout中设置的宽高
+     * lp.width，lp.height 如果值为-1表示match_parent，-2表示wrap_content
+     * var lp = imageView.layoutParams
+     * lp.width
+     * lp.height
+     */
+    override fun displayWithFixedSize(imageView: ImageView, url: String, width: Int, height: Int) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .override(width, height)
+            .into(imageView)
+    }
+
+    override fun displayWithThumbnail(imageView: ImageView, url: String, thumbnailUrl: String) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .thumbnail(Glide.with(imageView.context).load(thumbnailUrl))
+            .into(imageView)
+    }
+
+    override fun displayWithThumbnail(imageView: ImageView, url: String, sizeMultiplier: Float) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .thumbnail(sizeMultiplier)
+            .into(imageView)
+    }
+
+    override fun displayWithThumbnail(imageView: ImageView, url: String) {
+        displayWithThumbnail(imageView, url, 0.25f)
+    }
+
+    override fun displayWithTransformation(
+        imageView: ImageView, url: String,
+        transformation: MultiTransformation<Bitmap>
+    ) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .transform(transformation)
+            .into(imageView)
+    }
+
+    override fun displayWithTransformation(
+        imageView: ImageView, url: String,
+        vararg transformations: Transformation<Bitmap>
+    ) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .transform(*transformations)
+            .into(imageView)
+    }
+
+    override fun displayWithTransformation(
+        imageView: ImageView, url: String
+    ) {
+        displayWithTransformation(imageView, url, CenterCrop())
+    }
+
+    override fun displayRoundedCorners(imageView: ImageView, url: String, radius: Int) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .transform(
+                RoundedCornersTransformation(
+                    radius,
+                    0,
+                    RoundedCornersTransformation.CornerType.ALL
+                )
+            )
+            .into(imageView)
+    }
+
+    override fun displayRoundedCorners(imageView: ImageView, url: String) {
+        displayRoundedCorners(imageView, url, 10)
+    }
+
+    override fun displayBlur(imageView: ImageView, url: String, radius: Int) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .transform(BlurTransformation(radius))
+            .into(imageView)
+    }
+
+    override fun displayBlur(imageView: ImageView, url: String) {
+        displayBlur(imageView, url, 25)
+    }
+
+    override fun displayGrayscale(imageView: ImageView, url: String) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .transform(GrayscaleTransformation())
+            .into(imageView)
+    }
+
+    override fun displayColorFilter(imageView: ImageView, url: String, color: Int) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .transform(ColorFilterTransformation(color))
+            .into(imageView)
+    }
+
+    override fun displayCircle(imageView: ImageView, url: String) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .transform(CropCircleWithBorderTransformation())
+            .into(imageView)
+    }
+
+    override fun displayBorderCircle(
+        imageView: ImageView,
+        url: String,
+        borderColor: Int,
+        borderSize: Int
+    ) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .transform(CropCircleWithBorderTransformation(borderSize, borderColor))
+            .into(imageView)
+    }
+
+    override fun displayBorderCircle(
+        imageView: ImageView,
+        url: String,
+        borderColor: Int
+    ) {
+        displayBorderCircle(imageView, url, borderColor, Utils.toDp(4))
+    }
+
+    override fun displaySquare(imageView: ImageView, url: String) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .transform(CropSquareTransformation())
+            .into(imageView)
+    }
+
+    override fun displayWithAnimation(imageView: ImageView, url: String, viewAnimationId: Int) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .transition(GenericTransitionOptions.with(viewAnimationId))
+            .into(imageView)
+    }
+
+    override fun displayWithRequestOptions(
+        imageView: ImageView,
+        url: String,
+        requestOptions: RequestOptions
+    ) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .apply(requestOptions)
+            .into(imageView)
+    }
+
+    override fun displayWithDrawableListener(
+        imageView: ImageView,
+        url: String,
+        drawableListener: RequestListener<Drawable?>
+    ) {
+        GlideApp
+            .with(imageView.context)
+            .asDrawable()
+            .load(GlideURL(url))
+            .listener(drawableListener)
+            .into(imageView)
+    }
+
+    override fun displayWithBitmapListener(
+        imageView: ImageView,
+        url: String,
+        bitmapListener: RequestListener<Bitmap?>
+    ) {
+        GlideApp
+            .with(imageView.context)
+            .asBitmap()
+            .load(GlideURL(url))
+            .listener(bitmapListener)
+            .into(imageView)
     }
 
     /**

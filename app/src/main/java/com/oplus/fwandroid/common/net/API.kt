@@ -260,4 +260,12 @@ interface API {
     @Headers("cache:1")
     @GET("appapi/taobao_api/getTBKMaterialGoodsList")
     fun getGoodsList(@QueryMap map: Map<String?, String?>?): Flowable<BaseResponse<ArrayList<GoodsList>>>
+
+    /**
+     * 一个GIF图片的url
+     */
+    companion object{
+        const val gifUrl = "https://xmfenxiang.oss-cn-shanghai.aliyuncs.com/attach/2020/05/12/2f40b202005121455102601.gif"
+        const val picUrl = "https://gw.alicdn.com/bao/uploaded/i4/841497398/O1CN01ofoheU24WKhXyldVt_!!841497398.jpg"
+    }
 }

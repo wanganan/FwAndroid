@@ -42,8 +42,8 @@ object GlideConfig {
              * 该方法可以配合override()方法强制指定图片尺寸大小。
              * transform可传可变参数，即可以同时进行多个变换。
              * 图片变化开源库：https://github.com/wasabeef/glide-transformations
-             * FitCenter()：将图片按照原始的长宽比充满全屏。
-             * CenterCrop()：对原图的中心区域进行裁剪后得到的图片。
+             * FitCenter()：将图片按照原始的长宽比充满全屏。会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
+             * CenterCrop()：对原图的中心区域进行裁剪后得到的图片。会缩放图片让图片充满整个ImageView的边框，然后裁掉超出的部分。ImageVIew会被完全填充满，但是图片可能不能完全显示出。
              * CircleCrop()：对图片进行圆形化裁剪。
              * RoundedCorners：圆角变换。
              * CenterInside：视图的大小比原图小时，和FitCenter效果一样；而当视图的大小比原图片时，fitCenter会保持原图比例放大图片去填充View，而centerInside会保持原图大小。
@@ -62,7 +62,7 @@ object GlideConfig {
              * Crop
              *      CropTransformation：自定义矩形剪裁，参数 width=剪裁宽度，height=剪裁高度，cropType=剪裁类型（指定剪裁位置，可以选择上、中、下其中一种）
              *      CropCircleTransformation：圆形剪裁，已过时
-             *      CropCircleWithBorderTransformation：圆形剪裁，可设置圆形边界尺寸和颜色。参数 borderSize=边界尺寸，默认4px，borderColor=边界颜色，默认黑色。
+             *      CropCircleWithBorderTransformation：圆形剪裁，可设置圆形边线尺寸和颜色。参数 borderSize=边线尺寸，默认4px，borderColor=边线颜色，默认黑色。
              *      CropSquareTransformation：正方形剪裁
              *      RoundedCornersTransformation：圆角剪裁，参数 radius=圆角半径，margin=外边距，cornerType=边角类型（可以指定4个角中的哪几个角是圆角，哪几个不是）
              * Color
@@ -82,15 +82,15 @@ object GlideConfig {
 //            .transform(CenterCrop())
 //            .transform(MultiTransformation<Bitmap>(CircleCrop(), RoundedCornersTransformation(10, 0, RoundedCornersTransformation.CornerType.ALL)))
             /**
-             * 让Glide在加载图片的过程中不进行图片变换，会让transform设置的变换无效。
-             */
-            .dontTransform()
-            /**
              * Glide为了方便我们使用直接提供了现成的API。这些内置的图片变换API其实也只是对transform()方法进行了一层封装而已，它们背后的源码仍然还是借助transform()方法来实现的。
-             * centerCrop()等同于transform(CenterCrop())。所以如果transform设置后这里就没必要设置了。
-             * Glide默认FitCenter()。
+             * centerCrop()等同于transform(CenterCrop())。所以如果transform设置后这里就没必要设置了，而且这里的设置会覆盖transform的设置。建议使用transform的多参数功能。
+             * Glide默认fitCenter()。
              */
 //            .centerCrop()
+            /**
+             * 让Glide在加载图片的过程中不进行图片变换，会让transform设置的变换无效，包括等价的.centerCrop()等。
+             */
+            .dontTransform()
             /**
              * 定义图片格式
              * Glide v3默认PREFER_RGB_565，v4默认PREFER_ARGB_8888
@@ -117,9 +117,10 @@ object GlideConfig {
              * 正是因为Glide是如此的智能，实际上，使用Glide在大多数情况下我们都是不需要指定图片大小的。
              * 使用override()方法指定了一个图片的尺寸。也就是说，Glide现在只会将图片加载成width*height像素的尺寸，而不会管你的ImageView的大小是多少了。
              * 如果你想加载一张图片的原始尺寸的话，可以使用Target.SIZE_ORIGINAL关键字。override(Target.SIZE_ORIGINAL)，当然，这种写法也会面临着更高的OOM风险。
-             * 这里写成(0,0)是为了方便统一说明，Glide内部已经解释为无效的了。
+             * 设置override方法后，glide会对图片进行剪裁处理，显示的图片有可能会模糊化。
+             * 这里写成override(0)是为了方便统一说明，Glide内部已经解释为无效的了，即默认使用Glide自己的处理方法。
              */
-            .override(0, 0)
+            .override(0)
             /**
              * Glide缓存机制
             Glide的缓存设计可以说是非常先进的，考虑的场景也很周全。在缓存这一功能上，Glide又将它分成了两个模块，一个是内存缓存，一个是硬盘缓存。
