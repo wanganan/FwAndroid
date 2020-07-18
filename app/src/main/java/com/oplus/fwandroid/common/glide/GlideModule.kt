@@ -13,6 +13,7 @@ import com.bumptech.glide.load.engine.cache.LruResourceCache
 import com.bumptech.glide.load.engine.cache.MemorySizeCalculator
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.module.AppGlideModule
+import com.oplus.fwandroid.common.glide.progress.ProgressInterceptor
 import okhttp3.OkHttpClient
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
@@ -112,14 +113,19 @@ class GlideModule : AppGlideModule() {
      */
     override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
         super.registerComponents(context, glide, registry)
-        //设置图片加载的超时时间
-        val client = OkHttpClient.Builder()
+
+        var builder = OkHttpClient.Builder()
+        //添加进度监听拦截器
+        builder.addInterceptor(ProgressInterceptor)
+        val client = builder
+            //设置图片加载的超时时间和读写超时时间
             .connectTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS)
             .readTimeout(DEFAULT_READ_TIME_OUT, TimeUnit.SECONDS)
             .writeTimeout(DEFAULT_READ_TIME_OUT, TimeUnit.SECONDS)
             .build()
-
         val factory = OkHttpUrlLoader.Factory(client)
+
+        //替换Glide图片加载通讯方式为OkHttp
         glide.registry.replace(GlideUrl::class.java, InputStream::class.java, factory)
     }
 }

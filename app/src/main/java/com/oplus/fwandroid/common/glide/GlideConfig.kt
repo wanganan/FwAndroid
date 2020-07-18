@@ -84,6 +84,8 @@ object GlideConfig {
             /**
              * Glide为了方便我们使用直接提供了现成的API。这些内置的图片变换API其实也只是对transform()方法进行了一层封装而已，它们背后的源码仍然还是借助transform()方法来实现的。
              * centerCrop()等同于transform(CenterCrop())。所以如果transform设置后这里就没必要设置了，而且这里的设置会覆盖transform的设置。建议使用transform的多参数功能。
+             * 在Glide中，当你为一个 ImageView 开始加载时，Glide可能会自动应用 FitCenter 或 CenterCrop ，这取决于view的 ScaleType 。
+             * 如果 scaleType 是 CENTER_CROP , Glide 将会自动应用 CenterCrop 变换。如果 scaleType 为 FIT_CENTER 或 CENTER_INSIDE ，Glide会自动使用 FitCenter 变换。
              * Glide默认fitCenter()。
              */
 //            .centerCrop()

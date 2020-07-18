@@ -20,8 +20,11 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.BitmapImageViewTarget
 import com.bumptech.glide.request.target.DrawableImageViewTarget
+import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
+import com.oplus.fwandroid.common.glide.progress.ProgressInterceptor
+import com.oplus.fwandroid.common.glide.progress.ProgressListener
 import com.oplus.fwandroid.common.net.RxHelper
 import com.oplus.fwandroid.common.utils.FileUtil
 import com.orhanobut.logger.Logger
@@ -108,28 +111,34 @@ object GlideHelper : IImageLoader {
              * 这里用GlideURL包装url是为了解决 “图片不变，但地址发生变化” 的问题
              * // 加载本地图片
              * File file = new File(getExternalCacheDir() + "/image.jpg");
-             * Glide.with(this).load(file).into(imageView);
+             * GlideApp.with(this).load(file).into(imageView);
              * // 加载应用资源
              * int resource = R.drawable.image;
-             * Glide.with(this).load(resource).into(imageView);
+             * GlideApp.with(this).load(resource).into(imageView);
              * // 加载二进制流
              * byte[] image = getImageBytes();
-             * Glide.with(this).load(image).into(imageView);
+             * GlideApp.with(this).load(image).into(imageView);
              * // 加载Uri对象
              * Uri imageUri = getImageUri();
-             * Glide.with(this).load(imageUri).into(imageView);
+             * GlideApp.with(this).load(imageUri).into(imageView);
              */
             .load(GlideURL(url))
-//            .transform(ColorFilterTransformation(0x7900CCCC))
+            /**
+             * 从 Glide 4.3.0 开始，可以使用 error API 来指定一个 RequestBuilder。
+             * 这里在主请求失败后开始了一次新的加载fallbackUrl。
+             * 如果主请求成功完成，这个error RequestBuilder 将不会被启动。如果你同时指定了一个 thumbnail() 和一个 error() RequestBuilder，则这个后备的 RequestBuilder 将在主请求失败时启动，即使缩略图请求成功也是如此。
+             * error(RequestBuilder)方法只能写在这里，不能配置在RequestOptions中，因为其中的error不支持RequestBuilder参数。
+             */
+//            .error(GlideApp.with(imageView.context).load(fallbackUrl))
             /**
              * 缩略图是一个动态的占位符，会在实际的请求和处理之前显示出来。
              * thumbnail(sizeMultiplier)这种方式会加载相同的图片作为缩略图，但尺寸为 View 或 Target 的某个百分比。参数是一个浮点数，代表尺寸的倍数。
-             * 它也可以从网络上加载得来。如：.thumbnail(Glide.with(context).load(thumbnailUrl))
+             * 它也可以从网络上加载得来。如：.thumbnail(GlideApp.with(context).load(thumbnailUrl))
              * Glide 的 thumbnail API 允许你指定一个 RequestBuilder 以与你的主请求并行启动。缩略图会在主请求加载过程中展示。如果主请求在缩略图请求之前完成，则缩略图请求中的图像将不会被展示。
              * 注意：所有图片请求的设置同样适用于缩略图。例如，你请求某张图片时做了一个灰度变换，或者对图片展示设置了显示动画，那么对于它的缩略图也是同样会生效的。
              */
 //            .thumbnail(0.25f)
-//            .thumbnail(Glide.with(context).load(thumbnailUrl))
+//            .thumbnail(GlideApp.with(context).load(thumbnailUrl))
             /**
              * 添加显示动画
              * 在 Glide 中，Transitions (直译为”过渡”) 允许你定义 Glide 如何从占位符到新加载的图片，或从缩略图到全尺寸图像过渡。
@@ -202,9 +211,14 @@ object GlideHelper : IImageLoader {
              */
             .into(object : DrawableImageViewTarget(imageView) {
 
-                //加载时调用生命周期回调,取消了和它的资源释放。一般情况不需要我们操作。
+                /**
+                 * 加载时调用生命周期回调,取消了和它的资源释放。确保所有对Target资源的引用都在 onLoadCleared() 调用时置空，保证安全。
+                 * SimpleTarget和ViewTarget的过时，就是因为担心用户没有实现 onLoadCleared ，从而导致引用的UI位图难以回收而发生崩溃。
+                 * 因此如果into SimpleTarget或ViewTarget 的话，一定要实现onLoadCleared方法。其他的话一般不需要实现。
+                 */
                 override fun onLoadCleared(placeholder: Drawable?) {
                     super.onLoadCleared(placeholder)
+                    GlideApp.with(imageView.context).clear(imageView)
                 }
 
                 //加载失败回调，根据需求，可在当前方法中进行图片加载失败的后续操作。
@@ -263,6 +277,14 @@ object GlideHelper : IImageLoader {
             .into(imageView)
     }
 
+    override fun display(imageView: ImageView, url: String, fallbackUrl: String) {
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .error(GlideApp.with(imageView.context).load(fallbackUrl))
+            .into(imageView)
+    }
+
     override fun display(imageView: ImageView, url: URL) {
         GlideApp
             .with(imageView.context)
@@ -306,7 +328,40 @@ object GlideHelper : IImageLoader {
     }
 
     override fun display(viewGroup: ViewGroup, url: String) {
-        TODO("Not yet implemented")
+        GlideApp
+            .with(viewGroup.context)
+            .load(GlideURL(url))
+            .into(object : SimpleTarget<Drawable>() {
+                override fun onResourceReady(
+                    resource: Drawable,
+                    transition: Transition<in Drawable>?
+                ) {
+                    viewGroup.background = resource
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    super.onLoadCleared(placeholder)
+                    GlideApp.with(viewGroup.context).clear(viewGroup)
+                }
+            })
+
+//        或者
+//        GlideApp
+//            .with(viewGroup.context)
+//            .load(GlideURL(url))
+//            .into(object : ViewTarget<View, Drawable>(viewGroup) {
+//                override fun onResourceReady(
+//                    resource: Drawable,
+//                    transition: Transition<in Drawable>?
+//                ) {
+//                    viewGroup.background = resource
+//                }
+//
+//                override fun onLoadCleared(placeholder: Drawable?) {
+//                    super.onLoadCleared(placeholder)
+//                    GlideApp.with(viewGroup.context).clear(viewGroup)
+//                }
+//            })
     }
 
     override fun preload(imageView: ImageView, url: String) {
@@ -316,7 +371,7 @@ object GlideHelper : IImageLoader {
             .preload()
     }
 
-    override fun loadDrawable(
+    override fun display(
         imageView: ImageView,
         url: String,
         drawableImageViewTarget: DrawableImageViewTarget
@@ -328,7 +383,7 @@ object GlideHelper : IImageLoader {
             .into(drawableImageViewTarget)
     }
 
-    override fun loadBitmap(
+    override fun display(
         imageView: ImageView,
         url: String,
         bitmapImageViewTarget: BitmapImageViewTarget
@@ -340,16 +395,96 @@ object GlideHelper : IImageLoader {
             .into(bitmapImageViewTarget)
     }
 
+    override fun display(
+        imageView: ImageView,
+        url: String,
+        progressListener: ProgressListener
+    ) {
+        ProgressInterceptor.addListener(url, progressListener)
+
+        GlideApp
+            .with(imageView.context)
+            .load(GlideURL(url))
+            .into(object : DrawableImageViewTarget(imageView) {
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    super.onLoadCleared(placeholder)
+                    progressListener.onCancel()
+                    ProgressInterceptor.removeListener(url)
+                }
+
+                override fun onLoadFailed(errorDrawable: Drawable?) {
+                    super.onLoadFailed(errorDrawable)
+                    progressListener.onFailure()
+                    ProgressInterceptor.removeListener(url)
+                }
+
+                override fun onLoadStarted(placeholder: Drawable?) {
+                    super.onLoadStarted(placeholder)
+                    progressListener.onStart()
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable,
+                    transition: Transition<in Drawable>?
+                ) {
+                    super.onResourceReady(resource, transition)
+                    progressListener.onComplete()
+                    ProgressInterceptor.removeListener(url)
+                }
+            })
+    }
+
+    override fun display(
+        viewGroup: ViewGroup,
+        url: String,
+        progressListener: ProgressListener
+    ) {
+        ProgressInterceptor.addListener(url, progressListener)
+
+        GlideApp
+            .with(viewGroup.context)
+            .load(GlideURL(url))
+            .into(object : SimpleTarget<Drawable>() {
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    super.onLoadCleared(placeholder)
+                    GlideApp.with(viewGroup.context).clear(viewGroup)
+                    progressListener.onCancel()
+                    ProgressInterceptor.removeListener(url)
+                }
+
+                override fun onLoadFailed(errorDrawable: Drawable?) {
+                    super.onLoadFailed(errorDrawable)
+                    progressListener.onFailure()
+                    ProgressInterceptor.removeListener(url)
+                }
+
+                override fun onLoadStarted(placeholder: Drawable?) {
+                    super.onLoadStarted(placeholder)
+                    progressListener.onStart()
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable,
+                    transition: Transition<in Drawable>?
+                ) {
+                    viewGroup.background = resource
+                    progressListener.onComplete()
+                    ProgressInterceptor.removeListener(url)
+                }
+            })
+    }
+
     override fun download(imageView: ImageView, url: String, saveDir: File) {
         val fileName = System.currentTimeMillis().toString() + ".jpg"
         val destFile = File(saveDir, fileName)
-        Logger.e("path:"+destFile.absolutePath)
 
         Flowable.create<File>({ e ->
             e.onNext(
-                Glide.with(imageView.context)
+                GlideApp.with(imageView.context)
                     .asFile()
-                    .load(url)
+                    .load(GlideURL(url))
                     .submit()
                     .get()
             )
@@ -421,7 +556,7 @@ object GlideHelper : IImageLoader {
         GlideApp
             .with(imageView.context)
             .load(GlideURL(url))
-            .thumbnail(Glide.with(imageView.context).load(thumbnailUrl))
+            .thumbnail(GlideApp.with(imageView.context).load(thumbnailUrl))
             .into(imageView)
     }
 

@@ -12,6 +12,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.BitmapImageViewTarget
 import com.bumptech.glide.request.target.DrawableImageViewTarget
+import com.oplus.fwandroid.common.glide.progress.ProgressListener
 import jp.wasabeef.glide.transformations.internal.Utils
 import java.io.File
 import java.net.URL
@@ -36,6 +37,12 @@ interface IImageLoader {
      * placedResId：占位图资源id。同时设置placeholder，error，fallback三个方法
      */
     fun display(imageView: ImageView, url: String, placedResId: Int)
+
+    /**
+     * 加载并显示图片，如果主请求失败，会开启一个新的请求
+     * fallbackUrl：主请求失败时开启的新加载的url
+     */
+    fun display(imageView: ImageView, url: String, fallbackUrl: String)
 
     /**
      * 加载URL并显示图片
@@ -89,7 +96,7 @@ interface IImageLoader {
      * 加载url显示图片，并获得图片加载完成的Drawable
      * drawableImageViewTarget：加载完成的Drawable回调
      */
-    fun loadDrawable(
+    fun display(
         imageView: ImageView,
         url: String,
         drawableImageViewTarget: DrawableImageViewTarget
@@ -99,7 +106,19 @@ interface IImageLoader {
      * 加载url显示图片，并获得图片加载完成的Bitmap
      * bitmapImageViewTarget：加载完成的Bitmap回调
      */
-    fun loadBitmap(imageView: ImageView, url: String, bitmapImageViewTarget: BitmapImageViewTarget)
+    fun display(imageView: ImageView, url: String, bitmapImageViewTarget: BitmapImageViewTarget)
+
+    /**
+     * 加载url将图片显示在ImageView上，附加一个图片加载的进度监听
+     * progressListener：加载进度监听回调
+     */
+    fun display(imageView: ImageView, url: String, progressListener: ProgressListener)
+
+    /**
+     * 加载url将图片显示在ViewGroup上，附加一个图片加载的进度监听
+     * progressListener：加载进度监听回调
+     */
+    fun display(viewGroup: ViewGroup, url: String, progressListener: ProgressListener)
 
     /**
      * 下载图片url并保存到本地

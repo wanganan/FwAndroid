@@ -1,7 +1,13 @@
 package com.oplus.fwandroid.common.utils
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.*
+import android.net.Uri
+import android.os.Environment
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 /**
  * @author Sinaan
@@ -353,9 +359,9 @@ class ImageProcessor {
      * @param bitmap 原图
      * @return 怀旧效果处理后的图片
      */
-    fun nostalgic(bitmap: Bitmap): Bitmap? {
-        val width = bitmap.width
-        val height = bitmap.height
+    fun nostalgic(): Bitmap? {
+        val width = bitmap!!.width
+        val height = bitmap!!.height
         val newBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
         var pixColor = 0
         var pixR = 0
@@ -365,7 +371,7 @@ class ImageProcessor {
         var newG = 0
         var newB = 0
         val pixels = IntArray(width * height)
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+        bitmap!!.getPixels(pixels, 0, width, 0, 0, width, height)
         for (i in 0 until height) {
             for (k in 0 until width) {
                 pixColor = pixels[width * i + k]
@@ -742,5 +748,39 @@ class ImageProcessor {
         }
         newBitmap.setPixels(pixels, 0, width, 0, 0, width, height)
         return newBitmap
+    }
+
+    /**
+     * 保存图片到相册
+     */
+    fun saveImageToGallery(
+        context: Context
+    ): Boolean {
+        // 保存图片至指定路径
+        val storePath = Environment.getExternalStorageDirectory()
+            .absolutePath + File.separator + "glide"
+        val appDir = File(storePath)
+        if (!appDir.exists()) {
+            appDir.mkdirs()
+        }
+        try {
+            val file = File(appDir, System.currentTimeMillis().toString() + ".jpg")
+            if (!file.exists()) {
+                file.createNewFile()
+            }
+            val fos = FileOutputStream(file)
+            //通过io流的方式来压缩保存图片(80代表压缩20%)
+            val isSuccess = bitmap?.compress(Bitmap.CompressFormat.JPEG, 80, fos)
+            fos.flush()
+            fos.close()
+
+            //发送广播通知系统图库刷新数据
+            val uri = Uri.fromFile(file)
+            context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
+            return isSuccess!!
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return false
     }
 }
