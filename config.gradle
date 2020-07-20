@@ -21,7 +21,8 @@ ext {
             autosize            : "1.2.1",
             language            : "3.0",
             glide               : "4.11.0",
-            glideTransformations: "4.1.0"
+            glideTransformations: "4.1.0",
+            rxPermissions       : "0.12",
     ]
 
     dependencies = [
@@ -76,7 +77,9 @@ ext {
             "glide-compiler"          :
                     "com.github.bumptech.glide:compiler:${depsVersion.glide}",
             "glide-transformations"   :
-                    "jp.wasabeef:glide-transformations:${depsVersion.glideTransformations}"
+                    "jp.wasabeef:glide-transformations:${depsVersion.glideTransformations}",
+            "rxpermissions"           :
+                    "com.github.tbruyelle:rxpermissions:${depsVersion.rxPermissions}"
     ]
 
     // api 测试

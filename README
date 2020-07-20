@@ -1,7 +1,6 @@
 使用技术：
 Base,MVP,Kotlin,SmartRefreshLayout,BaseRecyclerViewAdapterHelper,Retrofit,RxJava,HTTPS安全认证,OkHttp无网缓存,RxLifecycle,Logger,
-屏幕适配，全局字体改变，语言国际化，代码混淆，
-
+屏幕适配,全局字体改变,语言国际化,代码混淆,Glide,RxPermissions,
 ——————————————————————————————————————————————————
 >>>Kotlin：
 https://kotlinlang.org/docs/reference/
@@ -277,7 +276,7 @@ https://developer.android.google.cn/studio/build/shrink-code
 https://jakewharton.com/r8-optimization-lambda-groups/
 https://juejin.im/post/5d1717996fb9a07eeb13bc95
 ——————————————————————————————————————————————————
->>>Glide
+>>>Glide（submit下载问题）
 https://github.com/bumptech/glide
 图片变换开源库：https://github.com/wasabeef/glide-transformations
 Glide v3,v4区别：https://muyangmin.github.io/glide-docs-cn/doc/migrating.html
@@ -294,4 +293,117 @@ Glide.with(fragment).clear(imageView);
 在 ListView 或 RecyclerView 中加载图片的代码和在单独的 View 中加载完全一样。Glide 已经自动处理了 View 的复用和请求的取消。
 对 url 进行 null 检验并不是必须的，如果 url 为 null，Glide 会清空 View 的内容，或者显示 placeholder Drawable 或 fallback Drawable 的内容。
 ——————————————————————————————————————————————————
-
+>>>RxPermissions
+https://github.com/tbruyelle/RxPermissions
+Android6.0运行时危险权限，危险权限实际上才是运行时权限主要处理的对象，这些权限可能引起隐私问题或者影响其他程序运行。
+权限组 权限列表
+android.permission-group.CALENDAR
+    android.permission.READ_CALENDAR 允许程序读取用户的日程信息
+android.permission-group.CAMERA
+    android.permission.CAMERA 允许访问摄像头进行拍照
+android.permission-group.CONTACTS
+    android.permission.READ_CONTACTS 允许应用访问联系人通讯录信息
+    android.permission.WRITE_CONTACTS 写入联系人，但不可读取
+    android.permission.GET_ACCOUNTS 访问GMail账户列表
+android.permission-group.LOCATION
+    android.permission.ACCESS_COARSE_LOCATION 通过WiFi或移动基站的方式获取用户错略的经纬度信息，定位精度大概误差在30~1500米
+    android.permission.ACCESS_FINE_LOCATION 通过GPS芯片接收卫星的定位信息，定位精度达10米以内
+android.permission-group.MICROPHONE
+    android.permission.RECORD_AUDIO 录制声音通过手机或耳机的麦克
+android.permission-group.PHONE
+    android.permission.READ_PHONE_STATE 访问电话状态
+    android.permission.CALL_PHONE 允许程序从非系统拨号器里输入电话号码
+    android.permission.READ_CALL_LOG 允许应用程序读取用户的通话记录
+    android.permission.WRITE_CALL_LOG 允许一个程序写入（但不读取）用户的通话记录资料
+    com.android.voicemail.permission.ADD_VOICEMAIL 允许应用程序添加语音邮件进入系统
+    android.permission.USE_SIP 允许程序使用SIP视频服务
+    android.permission.PROCESS_OUTGOING_CALLS 允许程序监视，修改或放弃播出电话
+android.permission-group.SENSORS
+    android.permission.BODY_SENSORS 允许从传感器，用户使用来衡量什么是他/她的身体内发生的事情，如心脏速率访问数据的应用程序
+android.permission-group.SMS
+    android.permission.SEND_SMS 发送短信
+    android.permission.RECEIVE_SMS 接收短信
+    android.permission.READ_SMS 读取短信内容
+    android.permission.RECEIVE_WAP_PUSH 接收WAP PUSH信息
+    android.permission.RECEIVE_MMS 接收彩信
+    android.permission.READ_CELL_BROADCASTS
+android.permission-group.STORAGE
+    android.permission.READ_EXTERNAL_STORAGE 允许程序读取外部存储，如SD卡读文件
+    android.permission.WRITE_EXTERNAL_STORAGE 允许程序写入外部存储，如SD卡上写文件
+配置：
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+dependencies {
+    implementation 'com.github.tbruyelle:rxpermissions:0.12'
+}
+初始化：
+// this是Activity或者Fragment的一个实例。在fragment中不能使用 new RxPermissions(getActivity());否则会报异常：java.lang.IllegalStateException: FragmentManager is already executing transactions.
+final RxPermissions rxPermissions = new RxPermissions(this);
+用法（注意申请的权限需要在manifest中有对应的声明）：
+request	不支持返回权限名;返回的权限结果:全部同意时值true,否则值为false。
+requestEach	会把每一个权限的名称和申请结果都列出来。
+requestEachCombined	返回的权限名称:多个权限名合并成一个;返回的权限结果:全部同意时值true,否则值为false
+申请多个权限(申请权限参数可为1个)：
+rxPermissions
+    .request(Manifest.permission.CAMERA,
+             Manifest.permission.READ_PHONE_STATE)
+    .subscribe(granted -> {
+        if (granted) {
+           // All requested permissions are granted
+           //只有全部同意，才申请成功。
+           //某个权限同意后，之后再申请此权限则不再弹出提示框，其他的会继续弹出。如果只有1个权限，申请成功，之后再申请此权限则不再弹出提示框。
+           //不支持返回权限名;返回的权限结果:全部同意时值true,否则值为false
+        } else {
+           // At least one permission is denied
+           //只要有一个禁止，则申请失败。
+        }
+    });
+申请多个权限，获得详细信息：
+rxPermissions
+    .requestEach(Manifest.permission.CAMERA,
+             Manifest.permission.READ_PHONE_STATE)
+    .subscribe(permission -> { // will emit 2 Permission objects
+        if (permission.granted) {
+           // `permission.name` is granted !
+           //同意后调用
+           //会把每一个权限的名称permission.name和申请结果permission.granted都列出来。
+           //if(permission.name.equals(Manifest.permission.READ_PHONE_STATE) && permission.granted){}
+        } else if (permission.shouldShowRequestPermissionRationale) {
+           // Denied permission without ask never again
+           //禁止申请，但没有选择“以后不再询问”，以后申请权限，会继续弹出提示
+        } else {
+           // Denied permission with ask never again
+           // Need to go to the settings
+           //禁止申请，但选择“以后不再询问”，以后申请权限，不会继续弹出提示
+        }
+    });
+申请多个权限，获取合并后的详细信息：
+rxPermissions
+    .requestEachCombined(Manifest.permission.CAMERA,
+             Manifest.permission.READ_PHONE_STATE)
+    .subscribe(permission -> { // will emit 1 Permission object
+        if (permission.granted) {
+           // All permissions are granted !
+           //全部同意后调用
+           //返回的权限名称:多个权限名合并成一个;返回的权限结果:全部同意时值true,否则值为false
+        } else if (permission.shouldShowRequestPermissionRationale)
+           // At least one denied permission without ask never again
+           //只要有一个选择：禁止申请，但没有选择“以后不再询问”，以后申请权限，会继续弹出提示
+        } else {
+           // At least one denied permission with ask never again
+           // Need to go to the settings
+           //只要有一个选择：禁止，但选择“以后不再询问”，以后申请权限，不会继续弹出提示
+        }
+    });
+条件触发获取权限(结合RxBinding使用)的情况：
+// Must be done during an initialization phase like onCreate
+RxView.clicks(findViewById(R.id.enableCamera))
+    .compose(rxPermissions.ensure(Manifest.permission.CAMERA))
+    .subscribe(granted -> {
+        // R.id.enableCamera has been clicked
+    });
+——————————————————————————————————————————————————

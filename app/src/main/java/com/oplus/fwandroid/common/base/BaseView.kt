@@ -19,7 +19,7 @@ interface BaseView {
     /**
      * Toast.Toast.LENGTH_SHORT
      */
-    fun showShortToast(toast: String?)
+    fun showToast(toast: String?)
 
     /**
      * Toast.Toast.LENGTH_LONG

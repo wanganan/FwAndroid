@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.AssetManager
 import android.database.Cursor
+import android.media.MediaScannerConnection
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.TextUtils
@@ -1258,5 +1260,44 @@ object FileUtil {
         } catch (e: Exception) {
         }
         return obj
+    }
+
+    //保存图片到相册
+    fun saveImageToGallery(
+        context: Context,
+        path: String
+    ) {
+        val file = File(path)
+        //其次把文件插入到系统图库
+        try {
+            val filename = path.substring(path.lastIndexOf('/') + 1)
+            MediaStore.Images.Media.insertImage(
+                context.contentResolver,
+                file.absolutePath, filename, null
+            )
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        }
+        // 通知图库更新
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            MediaScannerConnection.scanFile(
+                context,
+                arrayOf(file.absolutePath),
+                null
+            ) { path, uri ->
+                val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+                mediaScanIntent.data = uri
+                context.sendBroadcast(mediaScanIntent)
+            }
+        } else {
+            val relationDir = file.parent
+            val file1 = File(relationDir)
+            context.sendBroadcast(
+                Intent(
+                    Intent.ACTION_MEDIA_MOUNTED,
+                    Uri.fromFile(file1.absoluteFile)
+                )
+            )
+        }
     }
 }

@@ -77,7 +77,7 @@ abstract class BaseActivity : RxAppCompatActivity(), BaseView {
         return this
     }
 
-    override fun showShortToast(toast: String?) {
+    override fun showToast(toast: String?) {
         Toast.makeText(this, toast ?: "", Toast.LENGTH_SHORT).show()
     }
 

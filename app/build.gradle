@@ -155,4 +155,7 @@ dependencies {
     kapt rootProject.ext.dependencies["glide-compiler"]
     //图片变换开源库（裁剪变换、颜色变换、模糊变换等等）
     implementation rootProject.ext.dependencies["glide-transformations"]
+
+    //RxPermissions
+    implementation rootProject.ext.dependencies["rxpermissions"]
 }

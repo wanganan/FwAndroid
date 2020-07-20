@@ -28,7 +28,6 @@ import com.oplus.fwandroid.common.glide.progress.ProgressListener
 import com.oplus.fwandroid.common.net.RxHelper
 import com.oplus.fwandroid.common.utils.FileUtil
 import com.orhanobut.logger.Logger
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -218,7 +217,7 @@ object GlideHelper : IImageLoader {
                  */
                 override fun onLoadCleared(placeholder: Drawable?) {
                     super.onLoadCleared(placeholder)
-                    GlideApp.with(imageView.context).clear(imageView)
+//                    GlideApp.with(imageView.context).clear(imageView)
                 }
 
                 //加载失败回调，根据需求，可在当前方法中进行图片加载失败的后续操作。
@@ -485,16 +484,17 @@ object GlideHelper : IImageLoader {
                 GlideApp.with(imageView.context)
                     .asFile()
                     .load(GlideURL(url))
-                    .submit()
+//                    .submit()
+                    .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                     .get()
             )
             e.onComplete()
         }, BackpressureStrategy.BUFFER)
             .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.newThread())
             .compose(RxHelper.bindFlowableLifeCycle(imageView.context))
             .subscribe { file ->
-                FileUtil.moveFile(file!!, destFile)
+                FileUtil.copyFile(file.absolutePath, destFile.absolutePath)
 
                 // 最后通知图库更新
                 imageView.context.sendBroadcast(
@@ -508,9 +508,11 @@ object GlideHelper : IImageLoader {
 
     override fun download(imageView: ImageView, url: String) {
         val saveDir =
-            File(Environment.getExternalStorageDirectory(), "glide")
+        //Environment.getExternalStorageDirectory()已过时，Context.getExternalFilesDir替代
+        //新方法保存目录为：/storage/emulated/0/Android/data/com.oplus.fwandroid/files/Pictures/glide/1595217561058.jpg
+            File(imageView.context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "glide")
         if (!saveDir.exists()) {
-            saveDir.mkdir()
+            saveDir.mkdirs()
         }
         download(imageView, url, saveDir)
     }

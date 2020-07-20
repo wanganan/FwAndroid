@@ -47,11 +47,11 @@ class ListActivity : BaseListActivity<GoodsList>(),
     }
 
     override fun itemClick(position: Int) {
-        showShortToast("第$position")
+        showToast("第$position")
     }
 
     override fun itemLongClick(position: Int) {
-        showShortToast("长按第$position")
+        showToast("长按第$position")
     }
 
     override fun childClickRegisterIds(): IntArray {
@@ -60,9 +60,9 @@ class ListActivity : BaseListActivity<GoodsList>(),
 
     override fun itemChildClick(view: View, position: Int) {
         when (view.id) {
-            R.id.iv_logo -> showShortToast("点击图片第$position")
-            R.id.tv_m -> showShortToast("点击原价第$position")
-            R.id.tv_title -> showShortToast("点击标题第$position")
+            R.id.iv_logo -> showToast("点击图片第$position")
+            R.id.tv_m -> showToast("点击原价第$position")
+            R.id.tv_title -> showToast("点击标题第$position")
         }
     }
 
@@ -72,7 +72,7 @@ class ListActivity : BaseListActivity<GoodsList>(),
 
     override fun itemChildLongClick(view: View, position: Int) {
         when (view.id) {
-            R.id.tv_title -> showShortToast("长按标题第$position")
+            R.id.tv_title -> showToast("长按标题第$position")
         }
     }
 
@@ -115,7 +115,7 @@ class ListActivity : BaseListActivity<GoodsList>(),
     }
 
     override fun loadFailure(errorMsg: String?) {
-        showShortToast(errorMsg)
+        showToast(errorMsg)
         loadingTerminate(LoadStatus.ERROR)
     }
 }
