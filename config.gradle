@@ -4,7 +4,7 @@ ext {
             compileSdkVersion: 29,
             buildToolsVersion: "29.0.3",
             applicationId    : "com.oplus.fwandroid",
-            minSdkVersion    : 16,
+            minSdkVersion    : 17,
             targetSdkVersion : 29,
     ]
 
@@ -23,63 +23,103 @@ ext {
             glide               : "4.11.0",
             glideTransformations: "4.1.0",
             rxPermissions       : "0.12",
+            rxBinding           : "4.0.0",
+            multidex            : "1.0.3",
     ]
 
     dependencies = [
 
             //约束布局
-            "constraintlayout"        :
+            "constraintlayout"            :
                     "androidx.constraintlayout:constraintlayout:${depsVersion.constraintLayout}",
 
             //刷新依赖
-            "smartrefresh-kernel"     :
+            "smartrefresh-kernel"         :
                     "com.scwang.smart:refresh-layout-kernel:${depsVersion.smartRefresh}",//核心必须依赖
-            "smartrefresh-header"     :
+            "smartrefresh-header"         :
                     "com.scwang.smart:refresh-header-material:${depsVersion.smartRefresh}",//谷歌刷新头
-            "smartrefresh-footer"     :
+            "smartrefresh-footer"         :
                     "com.scwang.smart:refresh-footer-classics:${depsVersion.smartRefresh}",//经典加载
 
             //BaseRecyclerViewAdapterHelper
-            "baserecyclerview-adapter":
+            "baserecyclerview-adapter"    :
                     "com.github.CymChad:BaseRecyclerViewAdapterHelper:${depsVersion.adapterHelper}",
 
             //retrofit+RxJava+RxLifecycle
-            "retrofit"                :
+            "retrofit"                    :
                     "com.squareup.retrofit2:retrofit:${depsVersion.retrofit}",
-            "retrofit-converter-gson" :
+            "retrofit-converter-gson"     :
                     "com.squareup.retrofit2:converter-gson:${depsVersion.retrofit}",
-            "retrofit-adapter-rxjava" :
+            "retrofit-adapter-rxjava"     :
                     "com.squareup.retrofit2:adapter-rxjava3:${depsVersion.retrofit}",//RxJava3CallAdapterFactory。Retrofit官方已支持RxJava3 Adapter，只要加入dependencies就能把Call变成Observable。
-            "okhttp-log-interceptor"  :
+            "okhttp-log-interceptor"      :
                     "com.squareup.okhttp3:logging-interceptor:${depsVersion.okHttp}",
-            "rxjava"                  :
+            "rxjava"                      :
                     "io.reactivex.rxjava3:rxjava:${depsVersion.rxJava}",
-            "rxandroid"               :
+            "rxandroid"                   :
                     "io.reactivex.rxjava3:rxandroid:${depsVersion.rxAndroid}",//AndroidSchedulers.mainThread()
-            "rxlifecycle"             :
+            "rxlifecycle"                 :
                     "com.trello.rxlifecycle4:rxlifecycle:${depsVersion.rxLifecycle}",//生命周期绑定
-            "rxlifecycle-android"     :
+            "rxlifecycle-android"         :
                     "com.trello.rxlifecycle4:rxlifecycle-android:${depsVersion.rxLifecycle}",
-            "rxlifecycle-components"  :
+            "rxlifecycle-components"      :
                     "com.trello.rxlifecycle4:rxlifecycle-components:${depsVersion.rxLifecycle}",
-            "rxlifecycle-kotlin"      :
+            "rxlifecycle-kotlin"          :
                     "com.trello.rxlifecycle4:rxlifecycle-kotlin:${depsVersion.rxLifecycle}",
-            "logger"                  :
+
+            //RxBinding
+            "rxbinding"                   :
+                    "com.jakewharton.rxbinding4:rxbinding:${depsVersion.rxBinding}",
+            "rxbinding-core"              :
+                    "com.jakewharton.rxbinding4:rxbinding-core:${depsVersion.rxBinding}",
+            "rxbinding-appcompat"         :
+                    "com.jakewharton.rxbinding4:rxbinding-appcompat:${depsVersion.rxBinding}",
+            "rxbinding-drawerlayout"      :
+                    "com.jakewharton.rxbinding4:rxbinding-drawerlayout:${depsVersion.rxBinding}",
+            "rxbinding-leanback"          :
+                    "com.jakewharton.rxbinding4:rxbinding-leanback:${depsVersion.rxBinding}",
+            "rxbinding-recyclerview"      :
+                    "com.jakewharton.rxbinding4:rxbinding-recyclerview:${depsVersion.rxBinding}",
+            "rxbinding-slidingpanelayout" :
+                    "com.jakewharton.rxbinding4:rxbinding-slidingpanelayout:${depsVersion.rxBinding}",
+            "rxbinding-swiperefreshlayout":
+                    "com.jakewharton.rxbinding4:rxbinding-swiperefreshlayout:${depsVersion.rxBinding}",
+            "rxbinding-viewpager"         :
+                    "com.jakewharton.rxbinding4:rxbinding-viewpager:${depsVersion.rxBinding}",
+            "rxbinding-viewpager2"        :
+                    "com.jakewharton.rxbinding4:rxbinding-viewpager2:${depsVersion.rxBinding}",
+            "rxbinding-material"          :
+                    "com.jakewharton.rxbinding4:rxbinding-material:${depsVersion.rxBinding}",
+
+            //RxPermissions
+            "rxpermissions"               :
+                    "com.github.tbruyelle:rxpermissions:${depsVersion.rxPermissions}",
+
+            //logger
+            "logger"                      :
                     "com.orhanobut:logger:${depsVersion.logger}",
-            "autosize"                :
+
+            //今日头条屏幕适配
+            "autosize"                    :
                     "me.jessyan:autosize:${depsVersion.autosize}",
-            "language"                :
+
+            //语言国际化
+            "language"                    :
                     "com.hjq:language:${depsVersion.language}",
-            "glide"                   :
+
+            //Glide
+            "glide"                       :
                     "com.github.bumptech.glide:glide:${depsVersion.glide}",
-            "glide-okhttp-integration":
+            "glide-okhttp-integration"    :
                     "com.github.bumptech.glide:okhttp3-integration:${depsVersion.glide}",
-            "glide-compiler"          :
+            "glide-compiler"              :
                     "com.github.bumptech.glide:compiler:${depsVersion.glide}",
-            "glide-transformations"   :
+            "glide-transformations"       :
                     "jp.wasabeef:glide-transformations:${depsVersion.glideTransformations}",
-            "rxpermissions"           :
-                    "com.github.tbruyelle:rxpermissions:${depsVersion.rxPermissions}"
+
+            //MultiDex
+            "multidex"                    :
+                    "com.android.support:multidex:${depsVersion.multidex}",
     ]
 
     // api 测试

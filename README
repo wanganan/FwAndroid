@@ -1,6 +1,6 @@
 使用技术：
 Base,MVP,Kotlin,SmartRefreshLayout,BaseRecyclerViewAdapterHelper,Retrofit,RxJava,HTTPS安全认证,OkHttp无网缓存,RxLifecycle,Logger,
-屏幕适配,全局字体改变,语言国际化,代码混淆,Glide,RxPermissions,
+屏幕适配,全局字体改变,语言国际化,代码混淆,Glide,RxPermissions,RxBinding,MultiDex,
 ——————————————————————————————————————————————————
 >>>Kotlin：
 https://kotlinlang.org/docs/reference/
@@ -10,7 +10,8 @@ https://developer.android.google.cn/kotlin
 https://dagger.dev/dev-guide/android.html
 https://developer.android.google.cn/training/dependency-injection/dagger-android
 ——————————————————————————————————————————————————
->>>约束布局ConstraintLayout：https://www.jianshu.com/p/17ec9bd6ca8a
+>>>约束布局ConstraintLayout：
+https://www.jianshu.com/p/17ec9bd6ca8a
 implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 ——————————————————————————————————————————————————
 >>>智能刷新库：https://github.com/scwang90/SmartRefreshLayout
@@ -98,6 +99,41 @@ Retrofit+RxJava封装：
 https://segmentfault.com/a/1190000019683544
 https://blog.csdn.net/cs_lwb/article/details/87987314
 执行顺序：初始化Retrofit——>调用请求接口——>调用执行线程——>输出结果
+Retrofit+RxJava链式调用（A接口调用完成才能开始调用B接口）：
+这是一个先获取服务器线上版本号，再通过版本号获取其对应的下载链接的例子。这里【获取版本号】接口返回的版本号数据将作为【获取下载链接】接口的参数。
+retrofit.getRestAPI()
+                .getAppDataVersion()
+                .flatMap(new Func1<AppDataVersionEntity, Observable<AppDataDownLoadEntity>>() {
+                    //调用第一个接口（A接口）,获取版本号
+                    @Override
+                    public Observable<AppDataDownLoadEntity> call(AppDataVersionEntity appDataVersionEntity) {
+                        if () {
+                            //如果发生了改变，就去调用接口B
+                            return retrofit.getRestAPI().getAppDataDownLoad();
+                        } else {
+                            //如果没发生改变，做一些逻辑
+                        }
+                        return null;//如果return null就继续向下执行，并不会crash
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<AppDataDownLoadEntity>() {
+                    @Override
+                    public void onNext(AppDataDownLoadEntity appDataDownLoadEntity) {
+                        //这是执行接口B，做一些逻辑
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                });
 ——————————————————————————————————————————————————
 >>>RxLifecycle：绑定Android周期
 https://github.com/trello/RxLifecycle
@@ -296,7 +332,8 @@ Glide.with(fragment).clear(imageView);
 >>>RxPermissions
 https://github.com/tbruyelle/RxPermissions
 Android6.0运行时危险权限，危险权限实际上才是运行时权限主要处理的对象，这些权限可能引起隐私问题或者影响其他程序运行。
-权限组 权限列表
+权限组
+    权限列表
 android.permission-group.CALENDAR
     android.permission.READ_CALENDAR 允许程序读取用户的日程信息
 android.permission-group.CAMERA
@@ -406,4 +443,260 @@ RxView.clicks(findViewById(R.id.enableCamera))
     .subscribe(granted -> {
         // R.id.enableCamera has been clicked
     });
+——————————————————————————————————————————————————
+>>>事件绑定RxBinding
+https://github.com/JakeWharton/RxBinding
+https://blog.csdn.net/qq_36699930/article/details/88365681
+https://www.jianshu.com/p/1ad3633ef0b4
+RxBinding 能够把 Android 平台的兼容包内的 UI 控件变为 Observer 对象. 可以把 UI 控件的事件当作 RxJava 中的数据流来使用。
+RxBinding 可以响应式的方式来处理UI的响应问题，比如按钮的点击事件，ListView的点击事件，EditText的文本变化事件等等。
+其本质上就是对控件做了监听，只是把触发事件转换成了RxJava类型的事件流。使用RxBinding相当于是对控件进行了事件绑定操作。
+为什么使用：RxBinding 是对 Android View 事件的扩展, 使得开发者可以很方便的利用 RxJava 实现对 View 事件的各种操作。
+RxBinding支持常用的Android自带的Weights库：
+RxView（clicks）、RxTextView(textChanges)、RxAdapterView(itemClicks)、RxCompoundButton(checkChanges)、RxRadioGroup、RxSeekBar、RxPopupMenu、
+RxSearchView、RxRatingBar、RxToolbar、RxAbsListView、RxAdapter、RxAutoCompleteTextView、RxToolbar、RxMenuItem、RxViewGroup等等。
+引入：
+需要minSdkVersion>=17
+如果项目中已经导入了以下依赖包，可以直接删除了，因为RxBinding的依赖包自带rxjava和rxandroid。
+implementation 'io.reactivex.rxjavaX:rxjava:'
+implementation 'io.reactivex.rxjavaX:rxandroid:'
+Platform bindings:
+implementation 'com.jakewharton.rxbinding4:rxbinding:4.0.0'
+AndroidX library bindings:
+implementation 'com.jakewharton.rxbinding4:rxbinding-core:4.0.0'
+implementation 'com.jakewharton.rxbinding4:rxbinding-appcompat:4.0.0'
+implementation 'com.jakewharton.rxbinding4:rxbinding-drawerlayout:4.0.0'
+implementation 'com.jakewharton.rxbinding4:rxbinding-leanback:4.0.0'
+implementation 'com.jakewharton.rxbinding4:rxbinding-recyclerview:4.0.0'
+implementation 'com.jakewharton.rxbinding4:rxbinding-slidingpanelayout:4.0.0'
+implementation 'com.jakewharton.rxbinding4:rxbinding-swiperefreshlayout:4.0.0'
+implementation 'com.jakewharton.rxbinding4:rxbinding-viewpager:4.0.0'
+implementation 'com.jakewharton.rxbinding4:rxbinding-viewpager2:4.0.0'
+Google 'material' library bindings:
+implementation 'com.jakewharton.rxbinding4:rxbinding-material:4.0.0'
+点击事件：
+RxView.clicks(mButton).subscribe(new Consumer<Unit>() {
+            @Override
+            public void accept(Unit unit) throws Exception {
+                Toast.makeText(MainActivity.this, "点击按钮", Toast.LENGTH_SHORT).show();
+            }
+        });
+防抖处理（可防止短时间内对控件的重复点击）：
+RxView.clicks(mButton)
+                //throttleFirst（long windowDuration，TimeUnit unit），设置一定时间内只响应首次（throttleFirst）或者末次（throttleLast）的点击事件。windowDuration为防抖时间，unit为时间单位。
+                .throttleFirst(2, TimeUnit.SECONDS) //两秒钟之内只取一个点击事件，防抖操作
+                .subscribe(new Consumer<Unit>() {
+                    @Override
+                    public void accept(Unit unit) throws Exception {
+                        Toast.makeText(MainActivity.this, "点击按钮", Toast.LENGTH_SHORT).show();
+                    }
+                });
+View隐藏或显示：
+RxView.visibility(bt_1).accept(value);//等同于bt_1.setVisibility(value ? View.VISIBLE : View.GONE);
+RxView.visibility(bt_1, visibilityWhenFalse).accept(value);//等同于bt_1.setVisibility(value ? View.VISIBLE : visibilityWhenFalse);
+长按事件：
+RxView.longClicks(mButton).subscribe(new Consumer<Unit>() {
+            @Override
+            public void accept(Unit unit) throws Exception {
+                Toast.makeText(MainActivity.this, "按钮长按事件", Toast.LENGTH_SHORT).show();
+            }
+        });
+点击分发多个事件（就是点击了一个按钮在多个地方收到通知）：
+1.RxView.clicks(mBtnEvent).share()首先需要使用共享这个操作符
+2.通过CompositeDisposable订阅多个Disposable
+Observable<Unit> observable = RxView.clicks(mButton).share();
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+        Disposable disposable1 = observable.subscribe(new Consumer<Unit>() {
+            @Override
+            public void accept(Unit unit) throws Exception {
+                Log.e("xyh", "accept: " + unit.toString());
+            }
+        });
+
+        Disposable disposable2 = observable.subscribe(new Consumer<Unit>() {
+            @Override
+            public void accept(Unit unit) throws Exception {
+                Log.e("xyh", "accept: " + unit.toString()); //unit.toString()默认发送的数据，可以忽略
+            }
+        });
+        compositeDisposable.add(disposable1);
+        compositeDisposable.add(disposable2);
+绘制监听：
+RxView.draws(btnLogin)
+            .subscribe(new Consumer<Object>() {
+                @Override
+                public void accept(Object o) throws Exception {
+
+                }
+            });
+拖拽监听：
+RxView.drags(btnLogin)
+            .subscribe(new Consumer<DragEvent>() {
+                @Override
+                public void accept(DragEvent dragEvent) throws Exception {
+                    Toast.makeText(MainActivity.this, "被拖拽了", Toast.LENGTH_LONG).show();
+                }
+            });
+滑动触发：
+RxView.scrollChangeEvents(btnLogin)
+            .subscribe(new Consumer<ViewScrollChangeEvent>() {
+                @Override
+                public void accept(ViewScrollChangeEvent viewScrollChangeEvent) throws Exception {
+
+                }
+            });
+文本改变监听：
+RxTextView.textChanges(mEtUsername).subscribe(new Consumer<CharSequence>() {
+            @Override
+            public void accept(CharSequence charSequence) throws Exception {
+                Log.e("accept: " + charSequence.toString());
+            }
+        });
+表单验证：
+mEtUsername = (EditText) findViewById(R.id.et_username);
+        mEtPassword = (EditText) findViewById(R.id.et_password);
+        mBtnLogin = (Button) findViewById(R.id.btn_login);
+
+        //combineLatest这个操作符:可以结合两个Observable的数据源进行输出。
+        Observable.combineLatest(
+                RxTextView.textChanges(mEtUsername).map(new Function<CharSequence, String>() {
+                    @Override
+                    public String apply(CharSequence charSequence) throws Exception {
+                        return String.valueOf(charSequence);
+                    }
+                }), RxTextView.textChanges(mEtPassword).map(new Function<CharSequence, String>() {
+                    @Override
+                    public String apply(CharSequence charSequence) throws Exception {
+                        return String.valueOf(charSequence);
+                    }
+                }), new BiFunction<String, String, Boolean>() {
+                    @Override
+                    public Boolean apply(String name, String password) throws Exception {
+                        return name.equals("xyh") && password.equals("123");
+                    }
+                }).subscribe(new Consumer<Boolean>() {
+
+            @Override
+            public void accept(Boolean aBoolean) throws Exception {
+                if (aBoolean) {
+                    //账号和密码正确才能点击登录按钮
+                    mBtnLogin.setEnabled(true);
+                    RxView.clicks(mBtnLogin).subscribe(new Consumer<Unit>() {
+                        @Override
+                        public void accept(Unit unit) throws Exception {
+                            Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    mBtnLogin.setEnabled(false);
+                }
+            }
+        });
+ListView点击事件：
+RxAdapterView.itemClicks(mListView).subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                Toast.makeText(MainActivity.this, "List Item Clicked, Position = " + integer, Toast.LENGTH_LONG).show();
+            }
+        });
+CheckBox选中状态变化监听事件：
+RxCompoundButton.checkedChanges(mCheckBox).subscribe(new Consumer<Boolean>() {
+            @Override
+            public void accept(Boolean aBoolean) throws Exception {
+                if (aBoolean) {
+                    Toast.makeText(MainActivity.this, "选中了", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "没选中", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+RadioGroup选中状态变化监听事件：
+RxRadioGroup.checkedChanges(radio_g).subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+
+            }
+        });
+RxSeekBar：
+RxSeekBar.userChanges(seekBar).subscribe(new Consumer<Integer>() {
+        @Override
+        public void accept(Integer integer) throws Exception {
+
+        }
+    });
+
+    RxSeekBar.systemChanges(seekBar).subscribe(new Consumer<Integer>() {
+        @Override
+        public void accept(Integer integer) throws Exception {
+
+        }
+    });
+
+    RxSeekBar.changeEvents(seekBar).subscribe(new Consumer<SeekBarChangeEvent>() {
+        @Override
+        public void accept(SeekBarChangeEvent seekBarChangeEvent) throws Exception {
+
+        }
+    });
+
+    RxSeekBar.changes(seekBar).subscribe(new Consumer<Integer>() {
+        @Override
+        public void accept(Integer integer) throws Exception {
+
+        }
+    });
+RxPopupMenu：
+RxPopupMenu.itemClicks(popupMenu)
+          .subscribe(new Consumer<MenuItem>() {
+              @Override
+              public void accept(MenuItem menuItem) throws Exception {
+
+              }
+RxPopupMenu.dismisses(popupMenu).subscribe(new Consumer<Unit>() {
+            @Override
+            public void accept(Unit unit) throws Exception {
+
+            }
+        });
+RxBinding和rxlifecycle 结合起来使用，可以控制控件监听的生命周期：
+//点击事件，绑定活动/碎片生命周期
+//onDestory（）自动销毁
+Disposable disposable=RxView.clicks(bDownload)
+                .compose(this.bindToLifecycle())
+                .subscribe(new Consumer<Unit>() {
+                    @Override
+                    public void accept(Unit unit) throws Exception {
+                        Toast.makeText(MainActivity.this, "点击了url="+url, Toast.LENGTH_SHORT).show();
+                    }
+                });
+//按照生命周期需要来绑定
+//这里是在onStop()方法自动停止
+//ActivityEvent.STOP是activity的枚举
+//FragmentEvent.STOP是fragment的枚举
+Disposable disposable=RxView.clicks(bDownload)
+                .compose(this.bindUntilEvent(ActivityEvent.STOP))
+                .subscribe(new Consumer<Unit>() {
+                    @Override
+                    public void accept(Unit unit) throws Exception {
+                        Toast.makeText(MainActivity.this, "点击了url="+url, Toast.LENGTH_SHORT).show();
+                    }
+                });
+——————————————————————————————————————————————————
+>>>分包MultiDex
+使用和实现原理：https://blog.csdn.net/xiaxl/article/details/83089944
+在Android中一个Dex文件最多存储65536个方法，也就是一个short类型的范围。但随着应用方法数量的不断增加，当Dex文件突破65536方法数量时，打包时就会抛出异常。
+【Cannot fit requested classes in a single dex file (# methods: 70534 > 65536)】
+Android 5.0之后，ART虚拟机天然支持MultiDex。
+Android 5.0之前，系统只加载一个主dex，其它的dex采用MultiDex手段来加载。
+所以使用multidex可以解决低端型机的问题
+配置：
+//如果是android 5.0（minSdkVersion>=21）以上的设备，只需要设置为multiDexEnabled true
+defaultConfig {
+    multiDexEnabled true
+}
+//如果需要适配android 5.0（minSdkVersion<=20）以下的设备，不仅需要设置multiDexEnabled true，还需使用 Dalvik 可执行文件分包支持库
+implementation 'com.android.support:multidex:1.0.3'
+而在Java代码方面，还需要继承MultiDexApplication 或者 在Application中添加
+MultiDex.install(this);
 ——————————————————————————————————————————————————

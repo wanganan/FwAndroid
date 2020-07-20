@@ -45,6 +45,9 @@ android {
         targetSdkVersion rootProject.ext.android.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        //Dalvik文件分包需要
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -124,17 +127,37 @@ dependencies {
     //BaseRecyclerViewAdapterHelper
     implementation rootProject.ext.dependencies["baserecyclerview-adapter"]
 
-    //retrofit+RxJava+RxLifecycle
+    //Retrofit+RxJava+RxLifecycle
     implementation rootProject.ext.dependencies["retrofit"]
     implementation rootProject.ext.dependencies["retrofit-converter-gson"]
     implementation rootProject.ext.dependencies["retrofit-adapter-rxjava"]
     implementation rootProject.ext.dependencies["okhttp-log-interceptor"]
-    implementation rootProject.ext.dependencies["rxjava"]
-    implementation rootProject.ext.dependencies["rxandroid"]
+    //项目如果用到了rxbinding，可以不用引入rxjava和rxandroid，因为rxbinding的依赖包自带rxjava和rxandroid。
+//    implementation rootProject.ext.dependencies["rxjava"]
+//    implementation rootProject.ext.dependencies["rxandroid"]
     implementation rootProject.ext.dependencies["rxlifecycle"]
     implementation rootProject.ext.dependencies["rxlifecycle-android"]
     implementation rootProject.ext.dependencies["rxlifecycle-components"]
     implementation rootProject.ext.dependencies["rxlifecycle-kotlin"]
+
+    //RxBinding
+    //Platform bindings:
+    implementation rootProject.ext.dependencies["rxbinding"]
+    //AndroidX library bindings:
+    implementation rootProject.ext.dependencies["rxbinding-core"]
+    implementation rootProject.ext.dependencies["rxbinding-appcompat"]
+    implementation rootProject.ext.dependencies["rxbinding-drawerlayout"]
+    implementation rootProject.ext.dependencies["rxbinding-leanback"]
+    implementation rootProject.ext.dependencies["rxbinding-recyclerview"]
+    implementation rootProject.ext.dependencies["rxbinding-slidingpanelayout"]
+    implementation rootProject.ext.dependencies["rxbinding-swiperefreshlayout"]
+    implementation rootProject.ext.dependencies["rxbinding-viewpager"]
+    implementation rootProject.ext.dependencies["rxbinding-viewpager2"]
+    //Google 'material' library bindings:
+    implementation rootProject.ext.dependencies["rxbinding-material"]
+
+    //RxPermissions
+    implementation rootProject.ext.dependencies["rxpermissions"]
 
     //logger
     implementation rootProject.ext.dependencies["logger"]
@@ -156,6 +179,7 @@ dependencies {
     //图片变换开源库（裁剪变换、颜色变换、模糊变换等等）
     implementation rootProject.ext.dependencies["glide-transformations"]
 
-    //RxPermissions
-    implementation rootProject.ext.dependencies["rxpermissions"]
+    //MultiDex
+    //Dalvik可执行文件分包支持库，android 5.0（minSdkVersion<=20）以下的设备需要
+    implementation rootProject.ext.dependencies["multidex"]
 }

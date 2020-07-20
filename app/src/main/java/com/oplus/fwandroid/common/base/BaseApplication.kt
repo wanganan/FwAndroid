@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
+import androidx.multidex.MultiDex
 import com.hjq.language.LanguagesManager
 import com.oplus.fwandroid.BuildConfig
 import com.oplus.fwandroid.common.Global
@@ -76,11 +77,15 @@ open class BaseApplication : Application() {
             override fun onActivityDestroyed(activity: Activity) {}
         })
 
+        //安装Dalvik可执行文件分包支持，android 5.0（minSdkVersion<=20）以下的设备需要。
+        //否则当Dex文件突破65536方法数量时，打包时就会抛出异常。【Cannot fit requested classes in a single dex file (# methods: 70534 > 65536)】
+        MultiDex.install(this)
+
         //屏幕适配：对单位的自定义配置, 请在App启动时完成。如果你项目用副单位开发请打开进行设置。
-//        configUnits();
+//        configUnits()
 
         //初始化国际化框架，如果项目中用到了语言切换请打开。默认跟随系统语言变化。切换方法见README。
-//        LanguagesManager.init(this);
+//        LanguagesManager.init(this)
     }
 
     /**
@@ -90,7 +95,7 @@ open class BaseApplication : Application() {
     override fun attachBaseContext(base: Context?) {
         //国际化适配（绑定语种）
         //只要是 Context 的子类都需要重写，Activity，Service 也雷同
-        super.attachBaseContext(LanguagesManager.attach(base));
+        super.attachBaseContext(LanguagesManager.attach(base))
     }
 
     /**
@@ -141,7 +146,7 @@ open class BaseApplication : Application() {
             //您选择什么单位就在 layout 文件中用什么单位进行布局
             .supportSubunits = Subunits.MM
         //开启支持 Fragment 自定义参数的功能
-        AutoSizeConfig.getInstance().isCustomFragment = true;
+        AutoSizeConfig.getInstance().isCustomFragment = true
     }
 
 }
