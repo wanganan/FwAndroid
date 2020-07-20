@@ -110,7 +110,8 @@ abstract class BaseActivity : RxAppCompatActivity(), BaseView {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) {
             //重写字体缩放比例
             val config = res.configuration
-            config.fontScale = ManifestHelper.fontScale //设置字体缩放倍数
+            //初始化全局字体设置，如果项目中需要全局缩放字体大小时请修改manifest中font_scale的值。
+            config.fontScale = ManifestHelper.getMetaData(this, ManifestHelper.FONT_SCALE).toFloat()
             res.updateConfiguration(config, res.displayMetrics)
         }
         return res
@@ -121,7 +122,9 @@ abstract class BaseActivity : RxAppCompatActivity(), BaseView {
             //重写字体缩放比例
             val res = newBase.resources
             val config = res.configuration
-            config.fontScale = ManifestHelper.fontScale
+            //初始化全局字体设置，如果项目中需要全局缩放字体大小时请修改manifest中font_scale的值。
+            config.fontScale =
+                ManifestHelper.getMetaData(newBase, ManifestHelper.FONT_SCALE).toFloat()
             val newContext = newBase.createConfigurationContext(config)
             super.attachBaseContext(LanguagesManager.attach(newContext))// 绑定语种
         } else {

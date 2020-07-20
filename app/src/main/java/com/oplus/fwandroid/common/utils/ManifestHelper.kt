@@ -13,8 +13,7 @@ import android.content.pm.PackageManager
  * version: 1.0
  */
 object ManifestHelper {
-    private const val FONT_SCALE = "font_scale"//字体缩放倍数
-    var fontScale = 1f
+    const val FONT_SCALE = "font_scale"//字体缩放倍数
 
     /**
      * 获取使用者在 AndroidManifest 中填写的 Meta 信息
@@ -26,23 +25,22 @@ object ManifestHelper {
      *
      * @param context [Context]
      */
-    fun initFontMeta(context: Context) {
-        Thread(Runnable {
-            val packageManager = context.packageManager
-            val applicationInfo: ApplicationInfo?
-            try {
-                applicationInfo = packageManager.getApplicationInfo(
-                    context.packageName,
-                    PackageManager.GET_META_DATA
-                )
-                if (applicationInfo?.metaData != null) {
-                    if (applicationInfo.metaData.containsKey(FONT_SCALE)) {
-                        fontScale = applicationInfo.metaData[FONT_SCALE].toString().toFloat()
-                    }
+    fun getMetaData(context: Context, metaKey: String): String {
+        val packageManager = context.packageManager
+        val applicationInfo: ApplicationInfo?
+        try {
+            applicationInfo = packageManager.getApplicationInfo(
+                context.packageName,
+                PackageManager.GET_META_DATA
+            )
+            if (applicationInfo?.metaData != null) {
+                if (applicationInfo.metaData.containsKey(metaKey)) {
+                    return applicationInfo.metaData[metaKey].toString()
                 }
-            } catch (e: PackageManager.NameNotFoundException) {
-                e.printStackTrace()
             }
-        }).start()
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+        return ""
     }
 }

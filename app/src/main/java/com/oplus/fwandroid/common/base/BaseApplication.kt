@@ -79,9 +79,6 @@ open class BaseApplication : Application() {
         //屏幕适配：对单位的自定义配置, 请在App启动时完成。如果你项目用副单位开发请打开进行设置。
 //        configUnits();
 
-        //初始化全局字体设置，如果项目中需要全局缩放字体大小时打开并修改manifest中font_scale的值。
-//        ManifestHelper.initFontMeta(this)
-
         //初始化国际化框架，如果项目中用到了语言切换请打开。默认跟随系统语言变化。切换方法见README。
 //        LanguagesManager.init(this);
     }
