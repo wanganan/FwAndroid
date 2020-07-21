@@ -144,17 +144,17 @@ dependencies {
     //Platform bindings:
     implementation rootProject.ext.dependencies["rxbinding"]
     //AndroidX library bindings:
-    implementation rootProject.ext.dependencies["rxbinding-core"]
-    implementation rootProject.ext.dependencies["rxbinding-appcompat"]
-    implementation rootProject.ext.dependencies["rxbinding-drawerlayout"]
-    implementation rootProject.ext.dependencies["rxbinding-leanback"]
-    implementation rootProject.ext.dependencies["rxbinding-recyclerview"]
-    implementation rootProject.ext.dependencies["rxbinding-slidingpanelayout"]
-    implementation rootProject.ext.dependencies["rxbinding-swiperefreshlayout"]
-    implementation rootProject.ext.dependencies["rxbinding-viewpager"]
-    implementation rootProject.ext.dependencies["rxbinding-viewpager2"]
+//    implementation rootProject.ext.dependencies["rxbinding-core"]
+//    implementation rootProject.ext.dependencies["rxbinding-appcompat"]
+//    implementation rootProject.ext.dependencies["rxbinding-drawerlayout"]
+//    implementation rootProject.ext.dependencies["rxbinding-leanback"]
+//    implementation rootProject.ext.dependencies["rxbinding-recyclerview"]
+//    implementation rootProject.ext.dependencies["rxbinding-slidingpanelayout"]
+//    implementation rootProject.ext.dependencies["rxbinding-swiperefreshlayout"]
+//    implementation rootProject.ext.dependencies["rxbinding-viewpager"]
+//    implementation rootProject.ext.dependencies["rxbinding-viewpager2"]
     //Google 'material' library bindings:
-    implementation rootProject.ext.dependencies["rxbinding-material"]
+//    implementation rootProject.ext.dependencies["rxbinding-material"]
 
     //RxPermissions
     implementation rootProject.ext.dependencies["rxpermissions"]

@@ -1,14 +1,10 @@
 使用技术：
 Base,MVP,Kotlin,SmartRefreshLayout,BaseRecyclerViewAdapterHelper,Retrofit,RxJava,HTTPS安全认证,OkHttp无网缓存,RxLifecycle,Logger,
-屏幕适配,全局字体改变,语言国际化,代码混淆,Glide,RxPermissions,RxBinding,MultiDex,
+屏幕适配,全局字体改变,语言国际化,代码混淆,Glide,RxPermissions,RxBinding,MultiDex,Dagger,
 ——————————————————————————————————————————————————
 >>>Kotlin：
 https://kotlinlang.org/docs/reference/
 https://developer.android.google.cn/kotlin
-——————————————————————————————————————————————————
->>>Dagger：
-https://dagger.dev/dev-guide/android.html
-https://developer.android.google.cn/training/dependency-injection/dagger-android
 ——————————————————————————————————————————————————
 >>>约束布局ConstraintLayout：
 https://www.jianshu.com/p/17ec9bd6ca8a
@@ -444,7 +440,7 @@ RxView.clicks(findViewById(R.id.enableCamera))
         // R.id.enableCamera has been clicked
     });
 ——————————————————————————————————————————————————
->>>事件绑定RxBinding
+>>>事件绑定RxBinding(Kotlin中使用问题)
 https://github.com/JakeWharton/RxBinding
 https://blog.csdn.net/qq_36699930/article/details/88365681
 https://www.jianshu.com/p/1ad3633ef0b4
@@ -474,6 +470,107 @@ implementation 'com.jakewharton.rxbinding4:rxbinding-viewpager:4.0.0'
 implementation 'com.jakewharton.rxbinding4:rxbinding-viewpager2:4.0.0'
 Google 'material' library bindings:
 implementation 'com.jakewharton.rxbinding4:rxbinding-material:4.0.0'
+RxView事件——
+//设置是否可见
+RxView.visibility(mView).accept(mBoolean);
+//设置是否可点击
+RxView.clickable(mView).accept(mBoolean);
+//设置是否可用
+RxView.enabled(mView).accept(mBoolean);
+//设置是否选中
+RxView.selected(mView).accept(mBoolean);
+//设置是否按下
+RxView.pressed(mView).accept(mBoolean);
+//设置是否激活
+RxView.activated(mView).accept(mBoolean);
+//View被添加
+RxView.attaches(mView);
+//View被添加时触发
+RxView.attachEvents(mView);
+//View被移除
+RxView.detaches(mView);
+//点击事件
+RxView.clicks(mView);
+//长点击事件
+RxView.longClicks(mView);
+//被拖拽
+RxView.drags(mView);
+RxView.drags(mView, new Predicate<DragEvent>());
+//View被重绘
+RxView.draws(mView);
+//焦点发生改变
+RxView.focusChanges(mView);
+//全局布局改变或某View可视状态改变
+RxView.globalLayouts(mView);
+//悬停事件
+RxView.hovers(mView);
+//按键被按下
+RxView.keys(mView);
+//组件布局参数发生改变
+RxView.layoutChangeEvents(mView)
+//组件布局参数发生改变
+RxView.layoutChanges(mView);
+//将要绘制时
+RxView.preDraws();
+//滚动事件API23
+RxView.scrollChangeEvents();
+//状态栏和导航栏可见和隐藏
+RxView.systemUiVisibilityChanges(mView);
+//触摸事件
+RxView.touches(mView);
+其他基础组件——
+//菜单
+RxMenuItem.clicks(menuItem)
+RxMenuItem.actionViewEvents(menuItem)
+//容器View改变
+RxViewGroup.changeEvents(mViewGroup)
+//绝对视图滚动事件
+RxAbsListView.scrollEvents(mAbsListView)
+/适配器Adapter数据改变
+RxAdapter.dataChanges(mAdapter)
+//承载Adapter的View
+RxAdapterView.itemClicks(mAdapterView < mAdapter >)
+RxAdapterView.itemClickEvents(mAdapterView < mAdapter >)
+RxAdapterView.itemLongClicks(mAdapterView < mAdapter >);
+RxAdapterView.itemLongClicks(mAdapterView < mAdapter >, handle);
+RxAdapterView.itemLongClickEvents(mAdapterView < mAdapter >);
+RxAdapterView.itemLongClickEvents(mAdapterView < mAdapter >, handle);
+//自动匹配完成搜索框
+RxAutoCompleteTextView.itemClickEvents(mAutoCompleteTextView)
+//具有两种状态的组件状态切换
+RxCompoundButton.checkedChanges(mCompoundButton)
+//弹出窗体点击，消失
+RxPopupMenu.itemClicks(mPopupMenu)
+RxPopupMenu.dismisses(mPopupMenu)
+//RadioButton勾选事件
+RxRadioGroup.checked(mRadioGroup).accept(true);
+RxRadioGroup.checkedChanges(mRadioGroup)
+//星级滚动条进度改变事件
+RxRatingBar.ratingChanges(mRatingBar)
+RxRatingBar.ratingChangeEvents(mRatingBar)
+//搜索框
+RxSearchView.query(mSearchView, isSumbmit).accept(true);
+RxSearchView.queryTextChanges(mSearchView)
+RxSearchView.queryTextChangeEvents(mSearchView)
+//进度条进度改变
+RxSeekBar.changes(mSeekBar)
+RxSeekBar.changeEvents(mSeekBar)
+RxSeekBar.systemChanges(mSeekBar)
+RxSeekBar.userChanges(mSeekBar)
+//文本改变
+RxTextView.textChanges(mTextView)
+RxTextView.textChangeEvents(mTextView)
+RxTextView.textChangeEvents(mTextView);
+RxTextView.textChangeEvents(mTextView, handle);
+RxTextView.afterTextChangeEvents(mTextView, handle);
+RxTextView.beforeTextChangeEvents(mTextView, handle);
+//回车事件
+RxTextView.editorActions(mTextView)
+RxTextView.editorActions(mTextView, handle);
+//Toolbar中有五个子项和导航点击事件
+RxToolbar.itemClicks(mToolBar)
+RxToolbar.navigationClicks(mToolBar)
+举例：
 点击事件：
 RxView.clicks(mButton).subscribe(new Consumer<Unit>() {
             @Override
@@ -522,37 +619,44 @@ Observable<Unit> observable = RxView.clicks(mButton).share();
         });
         compositeDisposable.add(disposable1);
         compositeDisposable.add(disposable2);
-绘制监听：
-RxView.draws(btnLogin)
-            .subscribe(new Consumer<Object>() {
-                @Override
-                public void accept(Object o) throws Exception {
-
-                }
-            });
-拖拽监听：
-RxView.drags(btnLogin)
-            .subscribe(new Consumer<DragEvent>() {
-                @Override
-                public void accept(DragEvent dragEvent) throws Exception {
-                    Toast.makeText(MainActivity.this, "被拖拽了", Toast.LENGTH_LONG).show();
-                }
-            });
-滑动触发：
-RxView.scrollChangeEvents(btnLogin)
-            .subscribe(new Consumer<ViewScrollChangeEvent>() {
-                @Override
-                public void accept(ViewScrollChangeEvent viewScrollChangeEvent) throws Exception {
-
-                }
-            });
-文本改变监听：
-RxTextView.textChanges(mEtUsername).subscribe(new Consumer<CharSequence>() {
-            @Override
-            public void accept(CharSequence charSequence) throws Exception {
-                Log.e("accept: " + charSequence.toString());
-            }
-        });
+搜索框：
+RxTextView.textChanges( editText )
+                .debounce( 600 , TimeUnit.MILLISECONDS )//600ms没有操作的话就执行事件
+                .map(new Func1<CharSequence, String>() {
+                    @Override
+                    public String call(CharSequence charSequence) {
+                        //get the keyword
+                        String key = charSequence.toString() ;
+                        return key ;
+                    }
+                })
+                .observeOn( Schedulers.io() )
+                .map(new Func1<String, List<String>>() {
+                    @Override
+                    public List<String> call(String keyWord ) {
+                        //get list
+                        List<String> dataList = new ArrayList<String>() ;
+                        if ( ! TextUtils.isEmpty( keyWord )){
+                            for ( String s : getData()  ) {
+                                if (s != null) {
+                                    if (s.contains(keyWord)) {
+                                        dataList.add(s);
+                                    }
+                                }
+                            }
+                        }
+                        return dataList ;
+                    }
+                })
+                .observeOn( AndroidSchedulers.mainThread() )
+                .subscribe(new Action1<List<String>>() {
+                    @Override
+                    public void call(List<String> strings) {
+                        adapter.clear();
+                        adapter.addAll( strings );
+                        adapter.notifyDataSetChanged();
+                    }
+                }) ;
 表单验证：
 mEtUsername = (EditText) findViewById(R.id.et_username);
         mEtPassword = (EditText) findViewById(R.id.et_password);
@@ -591,72 +695,6 @@ mEtUsername = (EditText) findViewById(R.id.et_username);
                 } else {
                     mBtnLogin.setEnabled(false);
                 }
-            }
-        });
-ListView点击事件：
-RxAdapterView.itemClicks(mListView).subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer integer) throws Exception {
-                Toast.makeText(MainActivity.this, "List Item Clicked, Position = " + integer, Toast.LENGTH_LONG).show();
-            }
-        });
-CheckBox选中状态变化监听事件：
-RxCompoundButton.checkedChanges(mCheckBox).subscribe(new Consumer<Boolean>() {
-            @Override
-            public void accept(Boolean aBoolean) throws Exception {
-                if (aBoolean) {
-                    Toast.makeText(MainActivity.this, "选中了", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "没选中", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-RadioGroup选中状态变化监听事件：
-RxRadioGroup.checkedChanges(radio_g).subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer integer) throws Exception {
-
-            }
-        });
-RxSeekBar：
-RxSeekBar.userChanges(seekBar).subscribe(new Consumer<Integer>() {
-        @Override
-        public void accept(Integer integer) throws Exception {
-
-        }
-    });
-
-    RxSeekBar.systemChanges(seekBar).subscribe(new Consumer<Integer>() {
-        @Override
-        public void accept(Integer integer) throws Exception {
-
-        }
-    });
-
-    RxSeekBar.changeEvents(seekBar).subscribe(new Consumer<SeekBarChangeEvent>() {
-        @Override
-        public void accept(SeekBarChangeEvent seekBarChangeEvent) throws Exception {
-
-        }
-    });
-
-    RxSeekBar.changes(seekBar).subscribe(new Consumer<Integer>() {
-        @Override
-        public void accept(Integer integer) throws Exception {
-
-        }
-    });
-RxPopupMenu：
-RxPopupMenu.itemClicks(popupMenu)
-          .subscribe(new Consumer<MenuItem>() {
-              @Override
-              public void accept(MenuItem menuItem) throws Exception {
-
-              }
-RxPopupMenu.dismisses(popupMenu).subscribe(new Consumer<Unit>() {
-            @Override
-            public void accept(Unit unit) throws Exception {
-
             }
         });
 RxBinding和rxlifecycle 结合起来使用，可以控制控件监听的生命周期：
@@ -700,3 +738,178 @@ implementation 'com.android.support:multidex:1.0.3'
 而在Java代码方面，还需要继承MultiDexApplication 或者 在Application中添加
 MultiDex.install(this);
 ——————————————————————————————————————————————————
+>>>依赖项注入Dagger
+https://github.com/google/dagger/
+https://dagger.dev/dev-guide/android.html
+https://developer.android.google.cn/training/dependency-injection#kotlin
+依赖项注入 (DI) 是一种广泛用于编程的技术，非常适用于 Android 开发。遵循 DI 的原则可以为良好的应用架构奠定基础。
+依赖注入是面向对象编程的一种设计模式，其目的是为了降低程序耦合，这个耦合就是类之间的依赖引起的。
+实现依赖项注入可为您带来以下优势：重用代码、易于重构、易于测试。
+什么是依赖项注入？类通常需要引用其他类。类可通过以下方式获取所需的对象就是依赖项注入！使用这种方法，您可以获取并提供类的依赖项，而不必让类实例自行获取。
+【以参数形式提供。应用可以在构造类时提供这些依赖项，或者将这些依赖项传入需要各个依赖项的函数。例如Car 构造函数将接收 Engine 作为参数。】
+Android 中有两种主要的依赖项注入方式：
+构造函数注入。您将某个类的依赖项传入其构造函数。
+字段注入（或 setter 注入）。某些 Android 框架类（如 Activity 和 Fragment）由系统实例化，因此无法进行构造函数注入。使用字段注入时，依赖项将在创建类后实例化。
+您自行创建、提供并管理不同类的依赖项，而不依赖于库。这称为手动依赖项注入或人工依赖项注入。手动依赖项注入的方式，依赖项和类越多，手动依赖项注入就越繁琐。
+有一些库通过自动执行创建和提供依赖项的过程解决此问题。它们归为两类：
+基于反射的解决方案，可在运行时连接依赖项。
+静态解决方案，可生成在编译时连接依赖项的代码。
+Dagger 是适用于 Java、Kotlin 和 Android 的热门依赖项注入库，由 Google 进行维护。
+Dagger 为您创建和管理依赖关系图，从而便于您在应用中使用 DI。它提供了完全静态和编译时依赖项，解决了基于反射的解决方案（如 Guice）的诸多开发和性能问题。
+Dagger 会自动生成代码，该代码与您原本需要手动编写的代码相似。由于该代码是在编译时生成的，因此具有可追溯性，而且性能要高于其他基于反射的解决方案。
+只要您声明类的依赖项并指定如何使用注释满足它们的依赖关系，Dagger 便会在构建时自动执行以上所有操作。Dagger 生成的代码与您手动编写的代码类似。
+【在内部，Dagger 会创建一个对象图，然后它可以参考该图来找到提供类实例的方式。对于图中的每个类，Dagger 都会生成一个 factory 类型类，它会使用该类在内部获取该类型的实例。】
+引入：
+apply plugin: 'kotlin-kapt'
+dependencies {
+    implementation 'com.google.dagger:dagger:2.x'
+    kapt 'com.google.dagger:dagger-compiler:2.x'
+}
+使用：
+通过向构造函数添加 @Inject 注释，告知 Dagger 如何创建对应类的实例。
+通过向字段添加 @Inject 注释，让 Dagger 创建对应字段的实例。但Dagger仅知道要创建，还不知道如何创建。所以还需要结合@Inject 注释构造方法，告知其如何创建。（字段注入只能在无法使用构造函数注入的 Android 框架类中使用。）
+通过向类添加 @Module 注释，告知 Dagger 如何提供您的项目所不具备的类实例。需要配合内部方法，方法使用 @Provides 注释定义依赖项。
+通过向接口添加 @Component 注释，让 Dagger 创建一个依赖关系图。
+通过在@Component 注释的接口中提供一个函数，让该函数将请求注入的对象作为参数，告知 Dagger 要求注入依赖项的对象，此对象希望访问该图并请求注入。
+使用 @Binds 告知 Dagger 接口应采用哪种实现。
+使用 @Provides 告知 Dagger 如何提供您的项目所不具备的类。
+在 @Component 接口内，您可以定义返回所需类的实例的函数。@Component 会让 Dagger 生成一个容器，其中应包含满足其提供的类型所需的所有依赖项。这称为 Dagger 组件。
+它包含一个图，其中包括 Dagger 知道如何提供的对象及其各自的依赖项。
+// @Inject lets Dagger know how to create instances of this object
+class UserRepository @Inject constructor(
+    private val localDataSource: UserLocalDataSource,
+    private val remoteDataSource: UserRemoteDataSource
+) { ... }
+// @Inject lets Dagger know how to create instances of these objects
+class UserLocalDataSource @Inject constructor() { ... }
+class UserRemoteDataSource @Inject constructor() { ... }
+// @Component makes Dagger create a graph of dependencies
+@Component
+interface ApplicationGraph {
+    // The return type  of functions inside the component interface is
+    // what can be provided from the container
+    fun repository(): UserRepository
+}
+// Create an instance of the application graph
+val applicationGraph: ApplicationGraph = DaggerApplicationGraph.create()
+// Grab an instance of UserRepository from the application graph
+val userRepository: UserRepository = applicationGraph.repository()
+val userRepository2: UserRepository = applicationGraph.repository()
+// Dagger 在每次收到请求时都会创建 UserRepository 的新实例。
+assert(userRepository != userRepository2)
+//作用域限定
+//@Singleton 是 javax.inject 软件包随附的唯一一个作用域注释。
+//使用构造函数注入（通过 @Inject）时，应在类中添加作用域注释；使用 Dagger 模块时，应在 @Provides 方法中添加作用域注释。
+//仅在必要时使用作用域限定。过度使用作用域限定可能会对应用的运行时性能产生负面影响：只要组件在内存中，对象就会在内存中；获取限定作用域的对象的成本更高。
+//当 Dagger 提供对象时，它使用 DoubleCheck 锁定，而不是 factory 类型提供程序。
+// Scope annotations on a @Component interface informs Dagger that classes annotated
+// with this annotation (i.e. @Singleton) are bound to the life of the graph and so
+// the same instance of that type is provided every time the type is requested.
+构造函数注入（通过 @Inject）时——
+@Singleton
+@Component
+interface ApplicationGraph {
+    fun repository(): UserRepository
+}
+// Scope this class to a component using @Singleton scope (i.e. ApplicationGraph)
+@Singleton
+class UserRepository @Inject constructor(
+    private val localDataSource: UserLocalDataSource,
+    private val remoteDataSource: UserRemoteDataSource
+) { ... }
+val applicationGraph: ApplicationGraph = DaggerApplicationGraph.create()
+val userRepository: UserRepository = applicationGraph.repository()
+val userRepository2: UserRepository = applicationGraph.repository()
+//使用同一作用域注释@Singleton后，每次调用 applicationGraph.repository() 时，都会获得 UserRepository 的同一实例。
+assert(userRepository == userRepository2)
+使用 Dagger 模块时——
+@Singleton
+@Component(modules = [NetworkModule::class])
+interface ApplicationComponent {
+    fun inject(activity: LoginActivity)
+}
+@Singleton
+class UserRepository @Inject constructor(
+    private val localDataSource: UserLocalDataSource,
+    private val remoteDataSource: UserRemoteDataSource
+) { ... }
+@Module
+class NetworkModule {
+    // Way to scope types inside a Dagger Module
+    @Singleton
+    @Provides
+    fun provideLoginRetrofitService(): LoginRetrofitService { ... }
+}
+字段注入：
+注入的字段不能为私有字段。这些字段的公开范围必须至少为软件包私有。字段注入只能在无法使用构造函数注入的 Android 框架类中使用。
+class LoginActivity: Activity() {
+    // You want Dagger to provide an instance of LoginViewModel from the graph
+    @Inject lateinit var loginViewModel: LoginViewModel
+}
+注入依赖项的对象：
+此函数会告知 Dagger LoginActivity 希望访问该图并请求注入。Dagger 需要满足 LoginActivity 所需的所有依赖项（LoginViewModel 具有自己的依赖项）。
+如果您有请求注入的 LoginActivity 和 RegistrationActivity，则需要两种 inject() 方法，而不是涵盖这两种情况的一种通用方法。
+通用 inject() 方法不会告知 Dagger 需要提供的内容。
+接口中的函数可以具有任何名称，但在它们以参数形式接收要注入的对象时将其称为 inject() 是 Dagger 中的一种惯例。
+@Component
+interface ApplicationComponent {
+    // This tells Dagger that LoginActivity requests injection so the graph needs to
+    // satisfy all the dependencies of the fields that LoginActivity is requesting.
+    fun inject(activity: LoginActivity)
+}
+LoginActivity：
+// Definition of the Application graph
+@Component
+interface ApplicationComponent { ... }
+// appComponent lives in the Application class to share its lifecycle
+class MyApplication: Application() {
+    // Reference to the application graph that is used across the whole app
+    val appComponent = DaggerApplicationComponent.create()
+}
+class LoginActivity: Activity() {
+    // You want Dagger to provide an instance of LoginViewModel from the graph
+    @Inject lateinit var loginViewModel: LoginViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        // Make Dagger instantiate @Inject fields in LoginActivity
+        (applicationContext as MyApplication).appComponent.inject(this)
+        // Now loginViewModel is available
+
+        super.onCreate(savedInstanceState)
+    }
+}
+Dagger 模块：
+模块是一种以语义方式封装有关如何提供对象信息的方法。
+除了 @Inject 注释之外，还有一种方法可告知 Dagger 如何提供类实例，即使用 Dagger 模块中的信息。
+Dagger 模块是一个带有 @Module 注释的类。您可以在其中使用 @Provides 注释定义依赖项。@Provides 方法的依赖项是该方法的参数。
+可以在 Dagger 模块中使用 @Provides 注释告知 Dagger 如何提供您的项目所不具备的类（例如，Retrofit 的实例）。
+// @Module informs Dagger that this class is a Dagger Module
+@Module
+class NetworkModule {
+    // @Provides tell Dagger how to create instances of the type that this function
+    // returns (i.e. LoginRetrofitService).
+    // Function parameters are the dependencies of this type.
+    @Provides
+    fun provideLoginRetrofitService(): LoginRetrofitService {
+        // Whenever Dagger needs to provide an instance of type LoginRetrofitService,
+        // this code (the one inside the @Provides method) is run.
+        return Retrofit.Builder()
+                .baseUrl("https://example.com")
+                .build()
+                .create(LoginService::class.java)
+    }
+}
+为了使 Dagger 图了解此模块，您必须将其添加到 @Component 接口：
+// The "modules" attribute in the @Component annotation tells Dagger what Modules
+// to include when building the graph
+@Component(modules = [NetworkModule::class])
+interface ApplicationComponent {
+    ...
+}
+Dagger 子组件：
+——————————————————————————————————————————————————
+>>>依赖项注入Hit
+https://developer.android.google.cn/training/dependency-injection/hilt-android
+Dagger 和 Hilt 代码可以共存于同一代码库中。不过，在大多数情况下，最好使用 Hilt 管理您在 Android 上对 Dagger 的所有使用。
+Hilt 通过为项目中的每个 Android 类提供容器并自动管理其生命周期，提供了一种在应用中使用 DI（依赖项注入）的标准方法。
+Hilt 在热门 DI 库 Dagger 的基础上构建而成，因而能够受益于 Dagger 的编译时正确性、运行时性能、可伸缩性和 Android Studio 支持。
