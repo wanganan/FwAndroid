@@ -7,7 +7,7 @@ import android.app.Activity
  * @date 2020/6/23
  * GitHub：https://github.com/wanganan
  * email：waa182838@sina.com
- * description：根view,添加无加载纯界面的显示方法
+ * description：Activity或Fragment
  * version: 1.0
  */
 interface BaseView {
@@ -15,6 +15,16 @@ interface BaseView {
      * 宿主，activity返回this,fragment返回activity
      */
     fun host(): Activity
+
+    /**
+     * 布局id
+     */
+    fun layout(): Int
+
+    /**
+     * 初始化view
+     */
+    fun initView()
 
     /**
      * Toast.Toast.LENGTH_SHORT

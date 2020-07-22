@@ -95,7 +95,7 @@ android {
      * Cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6.
      * Please specify proper ‘-jvm-target’ option
      * 原因：项目是用jvm1.6 构建的 而库则用到了1.8 两者不兼容
-     * 解决办法：手动配置支持jvm1.8的特性，
+     * 解决办法：手动配置支持jvm1.8的特性，在项目中启用 Java 8。
      */
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -182,4 +182,8 @@ dependencies {
     //MultiDex
     //Dalvik可执行文件分包支持库，android 5.0（minSdkVersion<=20）以下的设备需要
     implementation rootProject.ext.dependencies["multidex"]
+
+    //Dagger
+    implementation 'com.google.dagger:dagger:2.23.1'
+    kapt 'com.google.dagger:dagger-compiler:2.23.1'
 }

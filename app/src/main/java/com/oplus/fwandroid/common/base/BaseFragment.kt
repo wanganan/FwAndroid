@@ -26,11 +26,6 @@ abstract class BaseFragment : RxFragment(), BaseView {
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
-    /**
-     * 子类view的初始化
-     */
-    abstract fun initView()
-
     override fun host(): Activity {
         return requireActivity()
     }

@@ -30,7 +30,7 @@ object RetrofitUtil {
      * @param observer
      */
     fun getUser(observer: BaseObserver<Any?>?) {
-        RetrofitHelper.create()
+        RetrofitHelper.build().create(API::class.java)
             .getUser()?.compose(RxHelper.bindFlowableLifeCycle(BaseApplication.currentActivity))
             ?.subscribe(observer)
     }
@@ -44,7 +44,7 @@ object RetrofitUtil {
         password: String?,
         consumer: BaseObserver<Any?>?
     ) {
-        RetrofitHelper.create()
+        RetrofitHelper.build().create(API::class.java)
             .postUser(name, password)
             ?.compose(RxHelper.bindFlowableLifeCycle(BaseApplication.currentActivity))
             ?.subscribe(consumer)
@@ -62,7 +62,7 @@ object RetrofitUtil {
             java.util.HashMap()
         headers["Accept"] = "application/json"
         headers["Authorization"] = access_token
-        RetrofitHelper.create()
+        RetrofitHelper.build().create(API::class.java)
             .put(headers, "厦门")
             ?.compose(RxHelper.bindFlowableLifeCycle(BaseApplication.currentActivity))
             ?.subscribe(consumer)
@@ -76,7 +76,7 @@ object RetrofitUtil {
         access_token: String?,
         consumer: BaseObserver<Any?>?
     ) {
-        RetrofitHelper.create()
+        RetrofitHelper.build().create(API::class.java)
             .delete(access_token, 1)
             ?.compose(RxHelper.bindFlowableLifeCycle(BaseApplication.currentActivity))
             ?.subscribe(consumer)
@@ -103,7 +103,7 @@ object RetrofitUtil {
 //                RequestBody.create(MediaType.parse("multipart/form-data"), file);
         val body: MultipartBody.Part =
             MultipartBody.Part.createFormData("file", file.name, reqFile)
-        RetrofitHelper.create().uploadImage(header, body)
+        RetrofitHelper.build().create(API::class.java).uploadImage(header, body)
             ?.compose(RxHelper.bindFlowableLifeCycle(BaseApplication.currentActivity))
             ?.subscribe(observer)
     }
@@ -129,7 +129,7 @@ object RetrofitUtil {
             builder.addFormDataPart("file", file.name, photoRequestBody)
         }
         val parts = builder.build().parts
-        RetrofitHelper.create().uploadImage1(header, parts)
+        RetrofitHelper.build().create(API::class.java).uploadImage1(header, parts)
             ?.compose(RxHelper.bindFlowableLifeCycle(BaseApplication.currentActivity))
             ?.subscribe(observer1)
     }
@@ -147,7 +147,7 @@ object RetrofitUtil {
         map["page_size"] = page_size.toString()
         map["material_id"] = material_id.toString()
         map["sort"] = "0"
-        RetrofitHelper.create().getGoodsList(map)?.let {
+        RetrofitHelper.build().create(API::class.java).getGoodsList(map)?.let {
             it.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(RxHelper.bindFlowableLifeCycle(BaseApplication.currentActivity))//绑定生命周期

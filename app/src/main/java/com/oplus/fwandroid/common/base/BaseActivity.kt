@@ -49,11 +49,6 @@ abstract class BaseActivity : RxAppCompatActivity(), BaseView {
     }
 
     /**
-     * 子类布局id
-     */
-    abstract fun layout(): Int
-
-    /**
      * 标题内容，""则不显示标题栏
      */
     abstract fun content(): String
@@ -67,11 +62,6 @@ abstract class BaseActivity : RxAppCompatActivity(), BaseView {
      * 标题栏右侧点击事件
      */
     abstract fun nextAction()
-
-    /**
-     * 子类view的初始化
-     */
-    abstract fun initView()
 
     override fun host(): Activity {
         return this

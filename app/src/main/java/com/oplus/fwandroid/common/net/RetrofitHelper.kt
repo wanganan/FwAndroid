@@ -39,7 +39,7 @@ object RetrofitHelper {
     /**
      * 获取对应的Service
      */
-    fun create(): API {
+    fun build(): Retrofit {
 
         //添加公共Header
         val headerInterceptor = Interceptor { chain ->
@@ -262,7 +262,7 @@ object RetrofitHelper {
              */
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        return retrofit!!.create(API::class.java)
+        return retrofit!!
     }
 
     /**
