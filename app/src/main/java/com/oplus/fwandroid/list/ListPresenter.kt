@@ -1,6 +1,5 @@
 package com.oplus.fwandroid.list
 
-import com.oplus.fwandroid.common.base.BaseView
 import com.oplus.fwandroid.common.bean.GoodsList
 
 /**
@@ -29,14 +28,14 @@ class ListPresenter : IListContract.IListPresenter {
             })
     }
 
-    override fun attachView(view: BaseView) {
-        view as IListContract.IListView?
-        this.view = view
-    }
-
-    override fun detachView() {
-        this.view = null
-    }
+//    override fun attachView(view: BaseView) {
+//        view as IListContract.IListView?
+//        this.view = view
+//    }
+//
+//    override fun detachView() {
+//        this.view = null
+//    }
 
 
 }

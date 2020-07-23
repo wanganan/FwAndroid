@@ -8,6 +8,7 @@ import androidx.multidex.MultiDex
 import com.hjq.language.LanguagesManager
 import com.oplus.fwandroid.BuildConfig
 import com.oplus.fwandroid.common.Global
+import com.oplus.fwandroid.common.di.DaggerAppComponent
 import com.oplus.fwandroid.common.utils.PreferencesUtil
 import com.orhanobut.logger.*
 import me.jessyan.autosize.AutoSizeConfig
@@ -38,6 +39,9 @@ open class BaseApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        DaggerAppComponent.create()
+
         instance = this
 
         //Logger配置

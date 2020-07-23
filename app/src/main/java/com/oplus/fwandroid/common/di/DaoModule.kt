@@ -1,12 +1,15 @@
-package com.oplus.fwandroid.common.base
+package com.oplus.fwandroid.common.di
+
+import dagger.Module
 
 /**
  * @author Sinaan
- * @date 2020/6/23
+ * @date 2020/7/23
  * GitHub：https://github.com/wanganan
  * email：waa182838@sina.com
  * description：
  * version: 1.0
  */
-interface BasePresenter {
+@Module
+class DaoModule {
 }

@@ -84,26 +84,31 @@ object RxHelper {
         context: Context,
         observable: Observable<T>
     ): ObservableSource<T>? {
-        return if (context is RxActivity) {
-            observable.compose(
-                context.bindUntilEvent(
-                    ActivityEvent.PAUSE
+        return when (context) {
+            is RxActivity -> {
+                observable.compose(
+                    context.bindUntilEvent(
+                        ActivityEvent.PAUSE
+                    )
                 )
-            )
-        } else if (context is RxFragmentActivity) {
-            observable.compose(
-                context.bindUntilEvent(
-                    ActivityEvent.PAUSE
+            }
+            is RxFragmentActivity -> {
+                observable.compose(
+                    context.bindUntilEvent(
+                        ActivityEvent.PAUSE
+                    )
                 )
-            )
-        } else if (context is RxAppCompatActivity) {
-            observable.compose(
-                context.bindUntilEvent(
-                    ActivityEvent.PAUSE
+            }
+            is RxAppCompatActivity -> {
+                observable.compose(
+                    context.bindUntilEvent(
+                        ActivityEvent.PAUSE
+                    )
                 )
-            )
-        } else {
-            observable
+            }
+            else -> {
+                observable
+            }
         }
     }
 

@@ -3,7 +3,7 @@ Base,MVP,Kotlin,SmartRefreshLayout,BaseRecyclerViewAdapterHelper,Retrofit,RxJava
 屏幕适配,全局字体改变,语言国际化,代码混淆,Glide,RxPermissions,RxBinding,MultiDex,Dagger,
 ——————————————————————————————————————————————————
 >>>项目结构
-项目根据业务功能划分，每一业务模块可以包含相关连的多个功能。为了将来能更好的移植到组件化开发。
+项目根据业务（business）功能（fct/function）划分，每一业务模块可以包含相关连的多个功能。为了将来能更好的移植到组件化开发。
 建议每个业务中包含功能在10个以下，如果包含的功能太多就拆解出为多个业务模块。
 每个业务单独建立一个包，每个包下面都会在细分为5个子包。分别是ui、presenter、model、di、contract。
 （1）ui包是处理页面显示相关的即mvp中的view。
@@ -857,6 +857,7 @@ kotlin中:
 annotation class ActivityScoped
 字段注入：
 注入的字段不能为私有字段。这些字段的公开范围必须至少为软件包私有。字段注入只能在无法使用构造函数注入的 Android 框架类中使用。
+在kotlin中，声明的变量默认是私有的，这就需要我们单独处理一下，比如添加lateinit关键字或者添加@JvmField注解。
 class LoginActivity: Activity() {
     @Inject lateinit var loginViewModel: LoginViewModel
 }
@@ -904,7 +905,7 @@ class NetworkModule {
 interface ApplicationComponent {
     ...
 }
-Dagger 子组件：
+Dagger 子组件(继承并扩展)：
 除了将对象作用域限定为不同的生命周期之外，创建子组件是分别封装应用的不同部分的良好做法。
 根据应用流程构建应用以创建不同的 Dagger 子图有助于在内存和启动时间方面实现性能和扩容性更强的应用。
 如需告知 Dagger 您希望新组件使用其他组件的一部分，方法是使用 Dagger 子组件。新组件必须是包含共享资源的组件的子组件。
@@ -926,27 +927,30 @@ interface LoginComponent {
 
     fun inject(loginActivity: LoginActivity)
 }
-//如需告知 Dagger LoginComponent 是 ApplicationComponent 的子组件，您必须通过以下方式予以指明：
-//1.创建新的 Dagger 模块（例如 SubcomponentsModule），并将子组件的类传递给注释的 subcomponents 属性。
+如需告知 Dagger LoginComponent 是 ApplicationComponent 的子组件，您必须通过以下方式予以指明：
+1.创建新的 Dagger 模块（例如 SubcomponentsModule），并将子组件的类传递给注释的 subcomponents 属性。
 @Module(subcomponents = LoginComponent::class)
 class SubcomponentsModule {}
-//2.将新模块（即 SubcomponentsModule）添加到 ApplicationComponent：
-//ApplicationComponent 不再需要注入 LoginActivity，因为现在由 LoginComponent 负责注入，因此您可以从 ApplicationComponent 中移除 inject() 方法。
+2.将新模块（即 SubcomponentsModule）添加到 ApplicationComponent：
+ApplicationComponent 不再需要注入 LoginActivity，因为现在由 LoginComponent 负责注入，因此您可以从 ApplicationComponent 中移除 inject() 方法。
 @Singleton
 @Component(modules = [NetworkModule::class, SubcomponentsModule::class])
 interface ApplicationComponent {
 }
-//3.提供在接口中创建 LoginComponent 实例的 factory：
+3.提供在接口中创建 LoginComponent 实例的 factory：
 @Singleton
 @Component(modules = [NetworkModule::class, SubcomponentsModule::class])
 interface ApplicationComponent {
 fun loginComponent(): LoginComponent.Factory
 }
+4.最后在LoginActivity使用：DaggerApplicationComponent.create().loginComponent().create().inject(this)
 MVP + Dagger2：
 https://github.com/googlesamples/android-architecture
 https://github.com/JessYanCoding/MVPArms
 在MVP框架中，所有的业务逻辑全在Presenter，换句话， presenter 持有的对象，控制着你程序的全部逻辑。
 这在dagger 中，讲白了 我们只要将所有的 presenter 对象控制就可以了。
+Dagger dependencies（依赖关系）：
+
 ------------------总结------------------
 理念：模块拆分重用。
 构建步骤：
@@ -959,6 +963,16 @@ https://github.com/JessYanCoding/MVPArms
 2.通过类中注入的方法inject(this)找到对应的component。
 3.查找component下是否有创建该对象的方法，如果没有，去添加的modules中依次寻找。
 ------------------总结------------------
+------------------注意------------------
+只有两种注入方式，构造器注入和 module 注入。
+Provide 如果是单例模式 对应的 Component 也要是单例模式。
+inject(Activity act) 不能放父类，例如 inject(baseActivity) 。
+component 和其依赖的 component 之间的 Scoped 不能相同。
+子类 component 依赖父类的 component ，子类 component 的Scoped 要小于父类的Scoped。
+@Singleton 的 @Component 只能被依赖而不能依赖任何 @Component。建议Singleton的级别是Application。
+不同的 Module 不能提供相同的对象实例。
+Module 中使用了自定义的 Scoped，那么对应的 component 也使用同样的Scoped。
+------------------注意------------------
 ——————————————————————————————————————————————————
 >>>依赖项注入Hit
 https://developer.android.google.cn/training/dependency-injection/hilt-android

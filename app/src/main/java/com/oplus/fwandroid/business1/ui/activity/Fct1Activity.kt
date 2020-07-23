@@ -1,30 +1,40 @@
-package com.oplus.fwandroid.list
+package com.oplus.fwandroid.business1.ui.activity
 
 import android.view.View
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.oplus.fwandroid.R
+import com.oplus.fwandroid.business1.contract.IFct1Contract
+import com.oplus.fwandroid.business1.di.component.DaggerFct1Component
+import com.oplus.fwandroid.business1.di.module.Fct1UIModule
+import com.oplus.fwandroid.business1.model.entity.Fct1Entity
+import com.oplus.fwandroid.business1.presenter.Fct1Presenter
+import com.oplus.fwandroid.business1.ui.adapter.Fct1Adapter
 import com.oplus.fwandroid.common.base.BaseListActivity
-import com.oplus.fwandroid.common.bean.GoodsList
 import kotlinx.android.synthetic.main.activity_base_list.*
+import javax.inject.Inject
 
 /**
  * @author Sinaan
  * @date 2020/6/23
  * GitHub：https://github.com/wanganan
  * email：waa182838@sina.com
- * description：纯RecyclerView显示，可控制横向或纵向
+ * description：纯RecyclerView显示，可控制横向或纵向。
  * version: 1.0
  */
-class ListActivity : BaseListActivity<GoodsList>(),
-    IListContract.IListView {
-    var presenter: ListPresenter? = null
-    var pageIndex = 1
+class Fct1Activity : BaseListActivity<Fct1Entity>(),
+    IFct1Contract.IFct1View {
+    /**
+     * 字段注入
+     * 由于某些 Android 框架类（如 Activity 和 Fragment）由系统实例化，因此 Dagger 无法为您创建这些类。
+     * 具体而言，对于 Activity，任何初始化代码都需要放入 onCreate() 方法中。这意味着，无法像在前面的示例中那样，在类的构造函数中使用 @Inject 注释（构造函数注入）。必须改为使用字段注入。
+     */
+    @Inject
+    lateinit var presenter: Fct1Presenter
 
-    override fun onDestroy() {
-        super.onDestroy()
-//        presenter?.detachView()
-    }
+    @Inject
+    lateinit var listAdapter: Fct1Adapter
+    private var pageIndex = 1
 
     override fun refresh() {
         loadInitialData()
@@ -42,8 +52,8 @@ class ListActivity : BaseListActivity<GoodsList>(),
         return false
     }
 
-    override fun adapter(): BaseQuickAdapter<GoodsList, BaseViewHolder> {
-        return ListAdapter(R.layout.item, mutableListOf())
+    override fun adapter(): BaseQuickAdapter<Fct1Entity, BaseViewHolder> {
+        return listAdapter
     }
 
     override fun itemClick(position: Int) {
@@ -88,8 +98,10 @@ class ListActivity : BaseListActivity<GoodsList>(),
     }
 
     override fun initView() {
-        presenter = ListPresenter()
-//        presenter?.attachView(this)
+        //告知 Dagger 要求注入依赖项的对象，以使用 Dagger 图中 @Component 接口下的一些对象和函数。
+        //需要提供一个函数，让该函数将请求注入的对象作为参数。
+        DaggerFct1Component.builder().fct1UIModule(Fct1UIModule(this, R.layout.item)).build()
+            .inject(this)
     }
 
     override fun loadInitialData() {
@@ -97,7 +109,7 @@ class ListActivity : BaseListActivity<GoodsList>(),
         presenter?.loadData(13370, 20, 1)
     }
 
-    override fun loadSuccess(list: ArrayList<GoodsList>?, isRefresh: Boolean) {
+    override fun loadSuccess(list: ArrayList<Fct1Entity>?, isRefresh: Boolean) {
         if (list!!.size > 0) {
             if (isRefresh) {
                 mAdapter?.setNewInstance(list)
