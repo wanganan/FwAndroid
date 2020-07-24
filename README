@@ -997,6 +997,7 @@ father.xxx()
 @Inject  主要是用来标注目标类的依赖和依赖的构造函数。
 @Module   Module和Provides是为解决第三方类库而生的。
 @Component  它是一个桥梁，一端是目标类，另一端是目标类所依赖类的实例。
+@Subcomponent 子组件标识，被标识的组件可以直接继承使用父组件的类实例。
 includes module间互相依赖。
 dependencies component间互相依赖。
 scope 自定义注释，实现单例用。
@@ -1013,7 +1014,7 @@ scope 自定义注释，实现单例用。
 ------------------注意------------------
 只有两种注入方式，构造器注入和 module 注入。
 Provide 如果是单例模式 对应的 Component 也要是单例模式。
-inject(Activity act) 不能放父类，例如 inject(baseActivity) 。
+inject(Activity act) 放父类是要小心，不能使用会被继承的变量。例如 inject(baseActivity) 中 basePresenter 。
 component 和其依赖的 component 之间的 Scoped 不能相同。
 子类 component 依赖父类的 component ，子类 component 的Scoped 要小于父类的Scoped。
 @Singleton 的 @Component 只能被依赖而不能依赖任何 @Component。建议Singleton的级别是Application。
