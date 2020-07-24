@@ -22,7 +22,13 @@ abstract class BaseFragment : RxFragment(), BaseView {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        // 提供 FragmentComponent 图供子类使用，并实例化@Inject标注的属性
+        (host() as BaseApplication).appComponent.fragmentComponent().create()
+            .inject(this)
+
         initView()
+
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 

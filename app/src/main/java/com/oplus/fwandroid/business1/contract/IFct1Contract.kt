@@ -1,8 +1,6 @@
 package com.oplus.fwandroid.business1.contract
 
 import com.oplus.fwandroid.business1.model.entity.Fct1Entity
-import com.oplus.fwandroid.common.base.BasePresenter
-import com.oplus.fwandroid.common.base.BaseView
 
 /**
  * @author Sinaan
@@ -24,14 +22,14 @@ interface IFct1Contract {
     }
 
     //UI层。负责和界面相关数据的显示和控件操作。
-    interface IFct1View : BaseView {
+    interface IFct1View {
         fun loadSuccess(list: ArrayList<Fct1Entity>?, isRefresh: Boolean)
         fun loadFailure(errorMsg: String?)
     }
 
     //Presenter层。从Model拿数据, 应用到UI层, 管理UI的状态, 决定要显示什么, 响应用户的行为。
     //MVP框架下，所有的业务逻辑应全在Presenter层。
-    interface IFct1Presenter : BasePresenter {
+    interface IFct1Presenter {
         fun loadData(materialId: Int, pageSize: Int, pageNo: Int)
     }
 }

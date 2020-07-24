@@ -37,6 +37,10 @@ abstract class BaseActivity : RxAppCompatActivity(), BaseView {
             window.statusBarColor = Color.TRANSPARENT
         }
 
+        // 提供 ActivityComponent 图供子类使用，并实例化@Inject标注的属性
+        (applicationContext as BaseApplication).appComponent.activityComponent().create()
+            .inject(this)
+
         back.setOnClickListener { finish() }
         content.text = content()
         titleBar.visibility = if ("" != content.text) View.VISIBLE else View.GONE
@@ -46,6 +50,10 @@ abstract class BaseActivity : RxAppCompatActivity(), BaseView {
         next.setOnClickListener { nextAction() }
 
         initView()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     /**

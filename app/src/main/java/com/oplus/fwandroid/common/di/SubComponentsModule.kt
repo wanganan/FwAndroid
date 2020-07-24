@@ -10,10 +10,10 @@ import dagger.Module
  * description：
  * version: 1.0
  * 如何告知Dagger指明组件的依赖关系：
- * 1.创建新的 Dagger 模块（例如 SubcomponentsModule），并将子组件的类传递给注释的 subcomponents 属性。
- * 2.将新模块（即 SubcomponentsModule）添加到 父Component 中。
+ * 1.创建新的 Dagger 模块（例如 SubComponentsModule），并将子组件的类传递给注释的 subcomponents 属性。
+ * 2.将新模块（即 SubComponentsModule）添加到 父Component 中。
  * 3.提供在 父Component 接口中创建 子Component 实例的 factory。
  */
-@Module(subcomponents = [ActivityComponent::class])
+@Module(subcomponents = [ActivityComponent::class,FragmentComponent::class])
 class SubComponentsModule {
 }

@@ -20,6 +20,9 @@ import dagger.Component
  * 这称为 Dagger 组件；它包含一个图，其中包括 Dagger 知道如何提供的对象及其各自的依赖项。
  * 在您【构建项目】时，Dagger 会为您生成 XXXComponent 接口的实现：DaggerXXXComponent。Dagger 会通过其注释处理器创建一个依赖关系图。
  * 为了使 Dagger 图了解模块，您必须将所需的模块用 modules 符号添加到 @Component 接口。
+ *
+ * 在初始化类实例时，Component首先搜索类中用Inject注解标注的构造函数属性，如果没找到，Component就会去Module中查找Provides注解标注的位置，
+ * Modules中的module不分先后顺序，能够互相引用。
  */
 @Component(modules = [Fct1UIModule::class, Fct1DataModule::class])
 /**

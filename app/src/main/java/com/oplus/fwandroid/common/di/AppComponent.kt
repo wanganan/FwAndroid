@@ -12,7 +12,7 @@ import javax.inject.Singleton
  * version: 1.0
  */
 @Singleton
-@Component(modules = [SubComponentsModule::class,ContextModule::class, DaoModule::class, GlideModule::class, NetModule::class])
+@Component(modules = [SubComponentsModule::class, ContextModule::class, DaoModule::class, GlideModule::class, NetModule::class])
 interface AppComponent {
     /**
      * 提供在 父Component 接口中创建 子Component 实例的 factory。
@@ -20,4 +20,5 @@ interface AppComponent {
      * 例如：DaggerApplicationComponent.create().loginComponent().create().inject(this)
      */
     fun activityComponent(): ActivityComponent.Factory
+    fun fragmentComponent(): FragmentComponent.Factory
 }

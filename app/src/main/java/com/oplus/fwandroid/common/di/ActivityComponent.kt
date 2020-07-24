@@ -1,5 +1,6 @@
 package com.oplus.fwandroid.common.di
 
+import com.oplus.fwandroid.common.base.BaseActivity
 import dagger.Subcomponent
 
 /**
@@ -7,7 +8,7 @@ import dagger.Subcomponent
  * @date 2020/7/23
  * GitHub：https://github.com/wanganan
  * email：waa182838@sina.com
- * description：
+ * description：activity基类组件
  * version: 1.0
  */
 /**
@@ -17,14 +18,15 @@ import dagger.Subcomponent
  * 如需创建子组件的实例，您需要父组件的实例。因此，父组件向子组件提供的对象的作用域仍限定为父组件。
  * 要想定义为其他 Component 的子组件，需要使用 @Subcomponent 添加注释：
  */
-@Subcomponent
+@Subcomponent(modules = [ActivityModule::class])
 interface ActivityComponent {
     /**
      * 在 子Component 内定义子组件 factory，以便 父Component 知道如何创建 子Component 的实例。
      */
+    @Subcomponent.Factory
     interface Factory{
         fun create():ActivityComponent
     }
 
-    fun inject()
+    fun inject(baseActivity: BaseActivity)
 }

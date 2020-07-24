@@ -8,6 +8,7 @@ import androidx.multidex.MultiDex
 import com.hjq.language.LanguagesManager
 import com.oplus.fwandroid.BuildConfig
 import com.oplus.fwandroid.common.Global
+import com.oplus.fwandroid.common.di.AppComponent
 import com.oplus.fwandroid.common.di.DaggerAppComponent
 import com.oplus.fwandroid.common.utils.PreferencesUtil
 import com.orhanobut.logger.*
@@ -24,6 +25,10 @@ import me.jessyan.autosize.unit.Subunits
  * version: 1.0
  */
 open class BaseApplication : Application() {
+
+    //将 AppComponent 图提供给其他 Android 框架类使用。
+    val appComponent: AppComponent = DaggerAppComponent.create()
+
     companion object {
         //@JvmStatic是为了方便java中调用，即BaseApplication.getInstance()。否则在需要BaseApplication.Companion.getInstance()。
         //lateinit表示这个属性开始是没有值的，但是，在使用前将被赋值（否则，就会抛出异常）。
@@ -39,8 +44,6 @@ open class BaseApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
-        DaggerAppComponent.create()
 
         instance = this
 
