@@ -3,6 +3,7 @@ package com.oplus.fwandroid.business1.model
 import com.oplus.fwandroid.business1.contract.IFct1Contract
 import com.oplus.fwandroid.business1.model.api.Fct1API
 import com.oplus.fwandroid.business1.model.entity.Fct1Entity
+import com.oplus.fwandroid.common.base.BaseModel
 import com.oplus.fwandroid.common.net.BaseObserver
 import com.oplus.fwandroid.common.net.BaseObserver.ResponseCallBack
 import com.oplus.fwandroid.common.net.BaseResponse
@@ -22,7 +23,7 @@ import java.util.*
  * version: 1.0
  * https://gift.fenxiangyouxuan.vip/appapi/taobao_api/getTBKMaterialGoodsList?material_id=13370&sort=0&page_size=20&page_no=1
  */
-class Fct1Model(var fct1Api: Fct1API, var activity: RxAppCompatActivity) :
+class Fct1Model(var fct1Api: Fct1API, var activity: RxAppCompatActivity) : BaseModel,
     IFct1Contract.IFct1Model {
     override fun loadData(
         materialId: Int,

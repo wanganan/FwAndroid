@@ -17,21 +17,15 @@ import dagger.Provides
  * version: 1.0
  */
 @Module
-class Fct1UIModule(private var view: Fct1Activity,private var layoutId: Int) {
+class Fct1UIModule(private var view: Fct1Activity, private var layoutId: Int) {
 
     @Provides
-    fun provideFct1Activity(): Fct1Activity {
-        return view
-    }
+    fun provideFct1Activity(): Fct1Activity = view
 
     @Fct1Scope
     @Provides
-    fun provideFct1Presenter(fct1Model: Fct1Model): Fct1Presenter {
-        return Fct1Presenter(view,fct1Model)
-    }
+    fun provideFct1Presenter(fct1Model: Fct1Model): Fct1Presenter = Fct1Presenter(view, fct1Model)
 
     @Provides
-    fun provideFct1Adapter(): Fct1Adapter {
-        return Fct1Adapter(layoutId, mutableListOf())
-    }
+    fun provideFct1Adapter(): Fct1Adapter = Fct1Adapter(layoutId, mutableListOf())
 }

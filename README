@@ -1,5 +1,5 @@
 使用技术：
-Base,MVP,Kotlin,SmartRefreshLayout,BaseRecyclerViewAdapterHelper,Retrofit,RxJava,HTTPS安全认证,OkHttp无网缓存,RxLifecycle,Logger,
+Base,MVP,Kotlin,Git,SmartRefreshLayout,BaseRecyclerViewAdapterHelper,Retrofit,RxJava,HTTPS安全认证,OkHttp无网缓存,RxLifecycle,Logger,
 屏幕适配,全局字体改变,语言国际化,代码混淆,Glide,RxPermissions,RxBinding,MultiDex,Dagger,
 ——————————————————————————————————————————————————
 >>>项目结构
@@ -18,11 +18,29 @@ Base,MVP,Kotlin,SmartRefreshLayout,BaseRecyclerViewAdapterHelper,Retrofit,RxJava
 （4）contract包处理存放编写mvp代码的中间接口定义的包外，还可以将功能中的常量或者功能相关的接口放到这个里边。
 （5）di是依赖注入的的英文简写，是dagger2中的概念，di下边包含component、module和scope三个子包。component是存放activity的桥接的接口，module是存放提供注入对象源的包，scope是自定义的注释类。
 ——————————————————————————————————————————————————
->>>Kotlin：
+>>>Kotlin
 https://kotlinlang.org/docs/reference/
 https://developer.android.google.cn/kotlin
 ——————————————————————————————————————————————————
->>>约束布局ConstraintLayout：
+>>>Git
+git使用：https://www.cnblogs.com/einstein-2014731/p/11492637.html
+git提交代码
+git add .    //指定更新内容    . 表示全部更新，test.txt 表示更新指定文件
+git commit -m "一些注释说明"
+git push origin master
+
+git拉取代码
+$ git pull origin master
+
+git删除文件夹/文件
+可配合.gitignore提交，Module的过滤可在module下添加.gitignore文件
+在包含要删除文件的目录下打开gitbash
+git rm -r .idea --cached（文件夹）
+git rm .idea --cached（文件）
+git commit -m '删除不必要的文件'
+git push origin master
+——————————————————————————————————————————————————
+>>>约束布局ConstraintLayout
 https://www.jianshu.com/p/17ec9bd6ca8a
 implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 ——————————————————————————————————————————————————
@@ -950,13 +968,38 @@ https://github.com/JessYanCoding/MVPArms
 在MVP框架中，所有的业务逻辑全在Presenter，换句话， presenter 持有的对象，控制着你程序的全部逻辑。
 这在dagger 中，讲白了 我们只要将所有的 presenter 对象控制就可以了。
 Dagger dependencies（依赖关系）：
-
+1.创建父类module
+@Module
+public class FatherModule {
+    @Provides
+    public Father provideFather() {
+        return new Father();
+    }
+}
+2.将module加入组件并将方法暴露出来
+@Component(modules = FatherModule.class)
+public interface FatherComponent {
+    //将内部的类暴露出来，以便于其他依赖于FatherComponent的Component调用
+    Father offerFather();
+}
+3.子类用dependencies依赖
+@Component(modules = ChildModule.class, dependencies = FatherComponent.class)
+public interface ChildComponent {
+    void inject(ChildActivity activity);
+}
+4.注入并使用
+@Inject lateinit var father : Father
+DaggerChildComponent.builder().fatherComponent(DaggerFatherComponent.create()).build().inject(this)
+father.xxx()
 ------------------总结------------------
 理念：模块拆分重用。
 概念：
 @Inject  主要是用来标注目标类的依赖和依赖的构造函数。
 @Module   Module和Provides是为解决第三方类库而生的。
 @Component  它是一个桥梁，一端是目标类，另一端是目标类所依赖类的实例。
+includes module间互相依赖。
+dependencies component间互相依赖。
+scope 自定义注释，实现单例用。
 构建步骤：
 1.先依据不同的功能或者模块构建若干个module（零件）。
 2.构建待处理业务逻辑的component（工具箱），将需要的module添加进去。

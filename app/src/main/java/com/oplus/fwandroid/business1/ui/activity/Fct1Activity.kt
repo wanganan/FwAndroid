@@ -11,6 +11,7 @@ import com.oplus.fwandroid.business1.model.entity.Fct1Entity
 import com.oplus.fwandroid.business1.presenter.Fct1Presenter
 import com.oplus.fwandroid.business1.ui.adapter.Fct1Adapter
 import com.oplus.fwandroid.common.base.BaseListActivity
+import com.oplus.fwandroid.common.di.DaggerAppComponent
 import kotlinx.android.synthetic.main.activity_base_list.*
 import javax.inject.Inject
 
@@ -35,6 +36,11 @@ class Fct1Activity : BaseListActivity<Fct1Entity>(),
     @Inject
     lateinit var listAdapter: Fct1Adapter
     private var pageIndex = 1
+
+    override fun onDestroy() {
+        presenter.detach()
+        super.onDestroy()
+    }
 
     override fun refresh() {
         loadInitialData()
@@ -98,9 +104,16 @@ class Fct1Activity : BaseListActivity<Fct1Entity>(),
     }
 
     override fun initView() {
-        //告知 Dagger 要求注入依赖项的对象，以使用 Dagger 图中 @Component 接口下的一些对象和函数。
-        //需要提供一个函数，让该函数将请求注入的对象作为参数。
-        DaggerFct1Component.builder().fct1UIModule(Fct1UIModule(this, R.layout.item)).build()
+        /**
+         * 告知 Dagger 要求注入依赖项的对象，以使用 Dagger 图中 @Component 接口下的一些对象和函数。
+         * 需要提供一个函数，让该函数将请求注入的对象作为参数。
+         * appComponent是依赖于（dependencies）父级后产生的方法，代表可以使用父级对象。
+         * 这里Fct1Component依赖于ActivityComponent，而ActivityComponent是AppComponent的子组件。
+         * 因为子组件不会生成DaggerChildComponent，所以这里的ActivityComponent只能通过DaggerAppComponent.create().activityComponent().create()创建。
+         */
+        DaggerFct1Component.builder()
+            .activityComponent(DaggerAppComponent.create().activityComponent().create())
+            .fct1UIModule(Fct1UIModule(this, R.layout.item)).build()
             .inject(this)
     }
 

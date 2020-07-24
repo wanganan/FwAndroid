@@ -20,21 +20,20 @@ import dagger.Provides
  * 有时，此方法不可行，即类没有构造函数，如Android 框架类（ Activity 和 Fragment）由系统实例化，因此 Dagger 无法为您创建这些类，您必须使用 Dagger 模块。
  * Dagger 模块是一个带有 @Module 注释的类。您可以在其中使用 @Provides 注释定义依赖项。
  * 模块是一种以语义方式封装有关如何提供对象信息的方法。建议对提供相同功能相关对象的逻辑进行分组（如Network=Retrofit+OkHttpClient+Gson+...）。如果应用扩展了，可以直接添加提供逻辑。
+ * 规范写法：XXXModule
  */
 @Module
 class Fct1DataModule {
     /**
      * @Provides 方法的依赖项是该方法的参数。
      *【 Dagger 将提供图中存在的参数对象实例以满足依赖项要求。】
+     * 规范写法：provide+对象类名
      */
     @Provides
-    fun provideFct1Model(fct1Api: Fct1API, fct1Activity: Fct1Activity): Fct1Model {
-        return Fct1Model(fct1Api, fct1Activity)
-    }
+    fun provideFct1Model(fct1Api: Fct1API, fct1Activity: Fct1Activity): Fct1Model =
+        Fct1Model(fct1Api, fct1Activity)
 
     @Provides
-    fun provideFct1Api(): Fct1API {
-        return RetrofitHelper.build().create(Fct1API::class.java)
-    }
+    fun provideFct1Api(): Fct1API = RetrofitHelper.build().create(Fct1API::class.java)
 
 }

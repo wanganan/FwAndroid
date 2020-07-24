@@ -16,24 +16,16 @@ import dagger.Provides
  * version: 1.0
  */
 @Module
-class ContextModule (var context: Context){
+class ContextModule(var context: Context) {
     @Provides
-    fun provideApplicationContext():Context{
-        return context.applicationContext
-    }
+    fun provideApplicationContext(): Context = context.applicationContext
 
     @Provides
-    fun provideActivityContext():BaseActivity{
-        return context as BaseActivity
-    }
+    fun provideActivityContext(): BaseActivity = context as BaseActivity
 
     @Provides
-    fun provideFragmentContext():BaseFragment{
-        return context as BaseFragment
-    }
+    fun provideFragmentContext(): BaseFragment = context as BaseFragment
 
     @Provides
-    fun provideViewContext():BaseView{
-        return context as BaseView
-    }
+    fun provideViewContext(): BaseView = context as BaseView
 }

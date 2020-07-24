@@ -37,7 +37,7 @@ abstract class BaseActivity : RxAppCompatActivity(), BaseView {
             window.statusBarColor = Color.TRANSPARENT
         }
 
-        // 提供 ActivityComponent 图供子类使用，并实例化@Inject标注的属性
+        // 提供 ActivityComponent 图供子类使用，并实例化@Inject标注的属性。子类可直接在其内部通过@Inject关联对象，无需在这里关联。
         (applicationContext as BaseApplication).appComponent.activityComponent().create()
             .inject(this)
 

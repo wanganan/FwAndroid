@@ -9,9 +9,6 @@ package com.oplus.fwandroid.common
  * version: 1.0
  */
 interface Global {
-    companion object{
-        var APPNAME = "FwAndroid"
-    }
     interface User{
         companion object{
             var SHPNAME = "USER"

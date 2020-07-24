@@ -11,7 +11,7 @@ import dagger.Subcomponent
  * description：fragment基类组件
  * version: 1.0
  */
-@Subcomponent
+@Subcomponent(modules = [FragmentModule::class])
 interface FragmentComponent {
     @Subcomponent.Factory
     interface Factory {

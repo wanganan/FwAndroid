@@ -4,6 +4,7 @@ import com.oplus.fwandroid.business1.di.module.Fct1DataModule
 import com.oplus.fwandroid.business1.di.module.Fct1UIModule
 import com.oplus.fwandroid.business1.di.scope.Fct1Scope
 import com.oplus.fwandroid.business1.ui.activity.Fct1Activity
+import com.oplus.fwandroid.common.di.ActivityComponent
 import dagger.Component
 
 /**
@@ -20,11 +21,18 @@ import dagger.Component
  * 这称为 Dagger 组件；它包含一个图，其中包括 Dagger 知道如何提供的对象及其各自的依赖项。
  * 在您【构建项目】时，Dagger 会为您生成 XXXComponent 接口的实现：DaggerXXXComponent。Dagger 会通过其注释处理器创建一个依赖关系图。
  * 为了使 Dagger 图了解模块，您必须将所需的模块用 modules 符号添加到 @Component 接口。
- *
- * 在初始化类实例时，Component首先搜索类中用Inject注解标注的构造函数属性，如果没找到，Component就会去Module中查找Provides注解标注的位置，
  * Modules中的module不分先后顺序，能够互相引用。
+ *
+ * 如果要依赖于上级组件，需要dependencies修饰。并且作用域不能超过上级。使用方法(fatherComponent需要编译生成)：
+ * FatherComponent fatherComponent = DaggerFatherComponent.create();
+ * DaggerChildComponent.builder().fatherComponent(fatherComponent).build().inject(this);
+ * dependencies使用步骤：
+ * 1.创建父类module
+ * 2.将父类module加入父组件并将方法暴露出来
+ * 3.子类用dependencies依赖
+ * 4.注入并调用父类方法【DaggerChildComponent.builder().fatherComponent(DaggerFatherComponent.create()).build().inject(this)】
  */
-@Component(modules = [Fct1UIModule::class, Fct1DataModule::class])
+@Component(modules = [Fct1UIModule::class, Fct1DataModule::class],dependencies = [ActivityComponent::class])
 /**
  * Dagger 中的作用域限定
  * 您可以使用作用域注释将某个对象的生命周期限定为其组件的生命周期。这意味着，每次需要提供该类型时，都会使用依赖项的同一实例。
@@ -36,6 +44,10 @@ import dagger.Component
  * 因为 ApplicationComponent 是在应用启动时（在应用类中）创建的，所以它会随着应用的销毁而被销毁。
  */
 @Fct1Scope
+/**
+ * 在初始化类实例时，Component首先搜索类中用Inject注解标注的构造函数属性，如果没找到，Component就会去Module中查找Provides注解标注的位置，
+ * 规范写法：XXXComponent
+ */
 interface Fct1Component {
     /**
      * 【 此函数会告知 Dagger 某个对象希望访问该图并请求注入。Dagger 需要满足该对象所需的所有依赖项。】
