@@ -1,6 +1,6 @@
 使用技术：
-Base,MVP,Kotlin,Git,SmartRefreshLayout,BaseRecyclerViewAdapterHelper,Retrofit,RxJava,HTTPS安全认证,OkHttp无网缓存,RxLifecycle,Logger,
-屏幕适配,全局字体改变,语言国际化,代码混淆,Glide,RxPermissions,RxBinding,MultiDex,Dagger,
+Base,MVP,Kotlin,Git,grade配置,ConstraintLayout,SmartRefreshLayout,BaseRecyclerViewAdapterHelper,Retrofit,RxJava,HTTPS安全认证,
+OkHttp无网缓存,RxLifecycle,Logger,屏幕适配,全局字体改变,语言国际化,代码混淆,Glide,RxPermissions,RxBinding,MultiDex,Dagger,
 ——————————————————————————————————————————————————
 >>>项目结构
 项目根据业务（business）功能（fct/function）划分，每一业务模块可以包含相关连的多个功能。为了将来能更好的移植到组件化开发。
@@ -40,11 +40,83 @@ git rm .idea --cached（文件）
 git commit -m '删除不必要的文件'
 git push origin master
 ——————————————————————————————————————————————————
+>>>gradle配置
+一：项目依赖统一管理(根目录.gradle关联引用问题)
+1.新建config.gradle (和项目的build.gradle同级)
+ext {
+    android = [
+        buildToolsVersion: '29.0.3',
+        ...
+    ]
+    depsVersion = [
+        retrofit: "2.9.0",
+        ...
+    ]
+    dependencies = [
+        "retrofit":"com.squareup.retrofit2:retrofit:${depsVersion.retrofit}",
+        ...
+    ]
+}
+2.在项目根目录的 build.gradle 的项目文件顶部中加入代码：
+apply from: 'config.gradle'
+3.在Module(如app)下的 build.gradle 引用：
+dependencies {
+    implementation rootProject.ext.dependencies["retrofit"]
+}
+二：修改国内阿里云镜像
+修改Maven仓库地址为国内阿里云镜像，可以提高依赖下载和加载速度。
+根目录build.gradle下：
+buildscript {
+    repositories {
+        maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        google()
+        jcenter()
+    }
+}
+allprojects {
+    repositories {
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
+        maven { url 'http://maven.aliyun.com/nexus/content/repositories/google' }
+        maven { url 'http://maven.aliyun.com/nexus/content/repositories/gradle-plugin' }
+        google()
+        jcenter()
+        maven { url 'https://jitpack.io' }
+    }
+}
+三：签名信息配置
+签名信息配置,需要写在defaultConfig和buildTypes前面,不然编译的时候会报错。
+通过android studio创建一个jks签名文件： 路径：Build—> Generate Signed Bundle/APK ---->APK---->Create new
+创建好后复制弹出的文本，如keytool -importkeystore -srckeystore E:\workspace\fwandroid.jks -destkeystore E:\workspace\fwandroid.jks -deststoretype pkcs12"
+进入cmd 命令行界面，输入刚复制的命令行将keystore文件转化为行业标准格式PKCS12
+生成signingConfigs
+1.Project structure-Modules-Signing Configs-创建release-输入已创建的keystore信息
+2.Project structure-Modules-Default Config-Signing Config-选择$signingConfigs.release-OK
+开发过程中使用发布模式：底部Build-BuildVariants-Build Variants-debug/release切换
+app/build.gradle下：
+android {
+    signingConfigs {
+            debug {
+                storeFile file('fwandroid.jks')
+                storePassword 'fwandroid'
+                keyAlias = 'fwandroid'
+                keyPassword 'fwandroid'
+            }
+            release {
+                storeFile file('E:\\workspace\\fwandroid.jks')
+                storePassword 'fwandroid'
+                keyAlias = 'fwandroid'
+                keyPassword 'fwandroid'
+            }
+        }
+}
+——————————————————————————————————————————————————
 >>>约束布局ConstraintLayout
 https://www.jianshu.com/p/17ec9bd6ca8a
 implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 ——————————————————————————————————————————————————
->>>智能刷新库：https://github.com/scwang90/SmartRefreshLayout
+>>>智能刷新库：
+https://github.com/scwang90/SmartRefreshLayout
 如果使用 AndroidX 需要依赖 androidx.appcompat，Header依赖包建议需要使用哪个就复制哪个的源码到项目中。
 implementation 'androidx.appcompat:appcompat:1.0.0'                 //必须 1.0.0 以上
 implementation  'com.scwang.smart:refresh-layout-kernel:2.0.1'      //核心必须依赖
@@ -60,7 +132,8 @@ android.useAndroidX=true
 android.enableJetifier=true
 SmartRefreshLayout 不需要添加混淆过滤代码，并且已经混淆测试通过
 ——————————————————————————————————————————————————
->>>强大灵活的RecyclerViewAdapter：https://github.com/CymChad/BaseRecyclerViewAdapterHelper
+>>>强大灵活的RecyclerViewAdapter：
+https://github.com/CymChad/BaseRecyclerViewAdapterHelper
 将JitPack存储库添加到您的构建文件中(项目根目录下build.gradle文件)
 allprojects {
     repositories {
@@ -1095,3 +1168,123 @@ https://developer.android.google.cn/training/dependency-injection/hilt-android
 Dagger 和 Hilt 代码可以共存于同一代码库中。不过，在大多数情况下，最好使用 Hilt 管理您在 Android 上对 Dagger 的所有使用。
 Hilt 通过为项目中的每个 Android 类提供容器并自动管理其生命周期，提供了一种在应用中使用 DI（依赖项注入）的标准方法。
 Hilt 在热门 DI 库 Dagger 的基础上构建而成，因而能够受益于 Dagger 的编译时正确性、运行时性能、可伸缩性和 Android Studio 支持。
+——————————————————————————————————————————————————
+>>>数据库greenDAO
+https://greenrobot.org/greendao/
+https://github.com/greenrobot/greenDAO
+https://www.jianshu.com/p/53083f782ea2
+https://www.jianshu.com/p/39db996be365
+对象关系映射（Object Relational Mapping，简称ORM，或O/RM，或O/R mapping），是一种程序技术，用于实现面向对象编程语言里不同类型系统的数据之间的转换。ORM方法论基于三个核心原则:
+1.简单：以最基本的形式建模数据。
+2.传达性：数据库结构被任何人都能理解的语言文档化。
+3.精确性：基于数据模型创建正确标准化的结构。
+Android数据库OrmLite、LitePal、GreenDao的区别：
+OrmLite：
+https://ormlite.com/
+它是基于注解和反射的的方式,导致OrmLite性能有着一定的损失(注解其实也是利用了反射的原理,所以效率会较低）。
+优点：文档全面，使用简单，易操作，社区活跃，有好的维护，使用简单易上手。
+缺点：基于反射，执行速度慢。
+LitePal：
+https://github.com/guolindev/LitePal
+它是基于对象关系映射模式，将常用的数据库功能进行封装，可以不用写一行SQL语句就可以完成创建表、增删改查的操作。并且很轻量级，jar包不到100k，几乎零配置。
+优点：轻量级，零配置，配置简单，API简洁
+缺点：使用反射影响性能，整个框架很关键的一点是id自增长，这支撑着整个框架的运转，但却使得我们很不方便维护已有的id属性（大部分服务端提供的数据都自带id），需要通过一定的转换，方能正常存储数据。
+GreenDao：
+https://greenrobot.org/greendao/
+https://github.com/greenrobot/greenDAO
+它是基于将对象映射到sqLite数据库中的。这点跟LitePal一样，通过使用一个简单的面向对象API，开发者可以对Java对象进行存储、更新、删除和查询。
+greenDAO的主要设计：
+1.最大性能（最快的 Android ORM）
+2.易于使用API
+3.高度优化
+4.最小内存消耗
+优点：效率高、体积小、占用内存小。
+缺点：学习成本高、封装不完整。
+区别：
+OrmLite基于反射和注解，效率比较低，占用内存大，而GreenDao、LitePal是对象关系映射，效率比较高，占用内存小，并且OrmLite存储的文件要比GreenDao、LitePal存储的文件占用要大一点。
+官网对GreenDAO描述：
+greenDAO是一个轻量级和快速的ORM解决方案，用于Android，将对象映射到SQLite数据库。
+坚如磐石:greenDAO从2011年就开始了，被无数著名的应用程序使用
+超级简单:简洁而直接的API，在V3中带有注释
+小:库小于150K，它只是普通的Java jar(没有依赖CPU的本机部件)
+快速:可能是Android最快的ORM，由智能代码生成驱动
+安全和表达性的查询API: QueryBuilder使用属性常量来避免输入错误
+强大的连接:跨实体的查询，甚至复杂关系的链连接
+灵活的属性类型:使用自定义类或枚举来表示实体中的数据
+加密:支持SQLCipher加密数据库
+配置：
+1.导入插件-根目录build.gradle：
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral() // add repository
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'org.greenrobot:greendao-gradle-plugin:3.3.0' // add plugin
+    }
+}
+2.配置相关依赖-app/build.gradle：
+apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao' // apply plugin
+dependencies {
+    implementation 'org.greenrobot:greendao:3.3.0' // add library
+}
+3.配置数据库相关信息-app/build.gradle：
+apply plugin: 'org.greenrobot.greendao'
+greendao {
+    // 指定数据库schema版本号，迁移等操作会用到
+    schemaVersion 1
+    // 设置生成数据库文件（DaoMaster、DaoSession、BeanDao）的目录，默认是在build中，可以将生成的文件放到我们的java目录中，请注意，这里路径用/不要用。
+    targetGenDir 'src/main/java'
+    // 设置生成的数据库相关文件（DaoMaster、DaoSession、BeanDao）的包名，默认为entity所在的包名
+    daoPackage 'com.oplus.fwandroid.common.dao'
+    //设置为true以自动生成单元测试。
+    generateTests false
+    //应存储生成的单元测试的基本目录。默认为 src / androidTest / java。
+    //targetGenDirTests 'src/main/java'
+}
+4.混淆/ProGuard：
+-keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {
+public static java.lang.String TABLENAME;
+}
+-keep class **$Properties { *; }
+# If you DO use SQLCipher:
+-keep class org.greenrobot.greendao.database.SqlCipherEncryptedHelper { *; }
+# If you do NOT use SQLCipher:
+-dontwarn net.sqlcipher.database.**
+# If you do NOT use RxJava:
+-dontwarn rx.**
+使用步骤：
+1.创建存储对象实体类
+使用GreenDao存储数据只需要在存储数据类前面声明@Entity注解就让GreenDao为其生成必要的代码：
+@Entity
+public class Student {
+    //如果字段是“id”，则必须用Long类型，如果不是“id”，那么就不必用Long类型。
+    @Id(autoincrement = true)
+    Long id;
+    @Unique
+    int studentNo;//学号
+    int age; //年龄
+    String telPhone;//手机号
+    String sex; //性别
+    String name;//姓名
+    String address;//家庭住址
+    String schoolName;//学校名字
+    String grade;//几年级
+    ……getter and setter and constructor method……
+}
+注解说明：
+@Entity：用于标识这是一个需要Greendao帮我们生成代码的bean。我们在运行的时候，greendao会自动帮我们生成对应的表。
+@Id：标明主键。标识的字段就是这个表对应的主键，括号里可以指定是否自增(autoincrement = true)。
+@Property：用于设置属性在数据库中的列名。标识的字段在表中对应的那一栏的名称是后面括号里面的，默认不写就是保持一致。
+@NotNull：非空。标识的字段，这个字段在表中不能为空，不然就出错，所以，在添加数据的时候设置默认值。
+@Transient：标识这个字段是自定义的不会创建到数据库表里。一般用作标记flag，状态变化。
+注意：greenDAO只支持java 的实体类，kotlin写实体类的不支持，因此如果要对某个数据bean存储的话需要使用java写greenDAO实体类。
+如：只需要private var id = 0 → private int id = 0；get/set方法greenDAO会自动生成。
+2.点击MakeProject(Ctrl+F9)后，就能看到在设置的数据库文件包下生成的实体类代码及其他生成的文件。
+DaoMaster，DaoSession，实体类对应BeanDao。
+DaoMaster:：DaoMaster保存数据库对象（SQLiteDatabase）并管理特定模式的DAO类（而不是对象）。它有静态方法来创建表或删除它们。它的内部类OpenHelper和DevOpenHelper是SQLiteOpenHelper实现，它们在SQLite数据库中创建模式。
+DaoSession：管理特定模式的所有可用DAO对象，您可以使用其中一个getter方法获取该对象。DaoSession还提供了一些通用的持久性方法，如实体的插入，加载，更新，刷新和删除。
+BeanDao：数据访问对象（DAO）持久存在并查询实体。对于每个实体，greenDAO生成DAO。它具有比DaoSession更多的持久性方法，例如：count，loadAll和insertInTx。
+Entities ：可持久化对象。通常, 实体对象代表一个数据库行使用标准 Java 属性(如一个POJO 或 JavaBean )。

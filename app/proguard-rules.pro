@@ -154,15 +154,20 @@
 -keep class com.oplus.fwandroid.common.widget.** { *; }
 ##内部方法
 -keepattributes EnclosingMethod
+
 #==================================【三方配置】==================================
+
 #language
 -keep class com.hjq.language.** {*;}
+
 #okhttp3
 -keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
 -dontwarn org.codehaus.mojo.animal_sniffer.*
 -dontwarn okhttp3.internal.platform.ConscryptPlatform
+
 #Rxjava
 -dontwarn java.util.concurrent.Flow*
+
 #Glide
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep class * extends com.bumptech.glide.module.AppGlideModule {
@@ -179,3 +184,15 @@
 #-keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 #target API 低于 Android API 27，请添加：
 #-dontwarn com.bumptech.glide.load.resource.bitmap.VideoDecoder
+
+#greenDAO
+-keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {
+public static java.lang.String TABLENAME;
+}
+-keep class **$Properties { *; }
+# If you DO use SQLCipher:
+-keep class org.greenrobot.greendao.database.SqlCipherEncryptedHelper { *; }
+# If you do NOT use SQLCipher:
+-dontwarn net.sqlcipher.database.**
+# If you do NOT use RxJava:
+-dontwarn rx.**

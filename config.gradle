@@ -25,6 +25,8 @@ ext {
             rxPermissions       : "0.12",
             rxBinding           : "4.0.0",
             multidex            : "1.0.3",
+            dagger              : "2.28.3",
+            greenDAO            : "3.3.0",
     ]
 
     dependencies = [
@@ -120,6 +122,16 @@ ext {
             //MultiDex
             "multidex"                    :
                     "com.android.support:multidex:${depsVersion.multidex}",
+
+            //Dagger
+            "dagger"                      :
+                    "com.google.dagger:dagger:${depsVersion.dagger}",
+            "dagger-compiler"             :
+                    "com.google.dagger:dagger-compiler:${depsVersion.dagger}",
+
+            //greenDAO
+            "greenDAO"                    :
+                    "org.greenrobot:greendao:${depsVersion.greenDAO}",
     ]
 
     // api 测试

@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-
-kapt {
-    generateStubs = true
-}
+apply plugin: 'org.greenrobot.greendao'
 
 android {
+
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
 
     /**
      * 签名信息配置,需要写在defaultConfig和buildTypes前面,不然编译的时候会报错。
@@ -35,8 +35,6 @@ android {
             keyPassword 'fwandroid'
         }
     }
-    compileSdkVersion rootProject.ext.android.compileSdkVersion
-    buildToolsVersion rootProject.ext.android.buildToolsVersion
 
     //默认配置
     defaultConfig {
@@ -108,6 +106,20 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8
     }
+}
+
+//greenDAO配置数据库相关信息
+greendao {
+    // 指定数据库schema版本号，迁移等操作会用到
+    schemaVersion 1
+    // 设置生成数据库文件（DaoMaster、DaoSession、BeanDao）的目录，默认是在build中，可以将生成的文件放到我们的java目录中，请注意，这里路径用/不要用。
+    targetGenDir 'src/main/java'
+    // 设置生成的数据库相关文件（DaoMaster、DaoSession、BeanDao）的包名，默认为entity所在的包名
+    daoPackage 'com.oplus.fwandroid.common.dao'
+    //设置为true以自动生成单元测试。
+    generateTests false
+    //应存储生成的单元测试的基本目录。默认为 src / androidTest / java。
+    //targetGenDirTests 'src/main/java'
 }
 
 //依赖配置
@@ -188,6 +200,9 @@ dependencies {
     implementation rootProject.ext.dependencies["multidex"]
 
     //Dagger
-    implementation 'com.google.dagger:dagger:2.23.1'
-    kapt 'com.google.dagger:dagger-compiler:2.23.1'
+    implementation rootProject.ext.dependencies["dagger"]
+    kapt rootProject.ext.dependencies["dagger-compiler"]
+
+    //greenDAO
+    implementation rootProject.ext.dependencies["greenDAO"]
 }
