@@ -8,7 +8,7 @@ import javax.inject.Singleton
  * @date 2020/7/23
  * GitHub：https://github.com/wanganan
  * email：waa182838@sina.com
- * description：Application级别的组件，提供全局工具变量
+ * description：Application级别的组件，提供全局工具变量。要求 ActivityComponent 和 FragmentComponent 作为子组件继承。
  * version: 1.0
  *
  * Dagger 组件。

@@ -1,4 +1,28 @@
-快捷键：
+1.安装开发软件
+jdk8=https://www.oracle.com/cn/java/technologies/javase-jdk8-downloads.html（自带jre）
+AndroidSDK=http://www.androiddevtools.cn/
+svn1.13.1=下载：https://tortoisesvn.net/downloads.html
+as64v3.6.3=https://developer.android.google.cn/studio/
+——————————————————————————————————————————————————
+2.配置环境变量和软件设置
+--环境变量
+计算机-属性-高级系统设置-高级-环境变量-系统变量
+classpath=.
+JAVA_HOME=C:\Program Files\Java\jdk1.7.0_75
+ANDROID_HOME=C:\Program Files\Android\android-sdk_r24.4.1-windows
+ANDROID_ADB_HOME=C:\Program Files\Android\android-sdk_r24.4.1-windows\platform-tools
+ANDROID_SDK_HOME=C:\Program Files\Android\Android_avd;
+Path+=%JAVA_HOME%\bin;%ANDROID_HOME%;%ANDROID_ADB_HOME%;%ANDROID_SDK_HOME%;
+配置好在cmd窗口运行java或javac确认
+--软件设置
+jdk在as配置：Project Structure-SDK Location-JDK location
+sdk在as配置：Project Structure-SDK Location-Android SDK location
+svn=配置：https://www.cnblogs.com/songmeng/p/4389446.html
+svn在as配置：setting-Version Control-SubVersion(C:\Program Files\TortoiseSVN\bin\svn.exe)
+——————————————————————————————————————————————————
+3.基本设置
+快捷键，字体，样式，依赖
+快捷键：（Settings-Keymap）
 Delete Line : Ctrl+D
 Start New Line : Shift+Enter
 Reformat code : Ctrl+Alt+F
@@ -11,6 +35,38 @@ Generate... : Alt+Insert
 Field... : Ctrl+Alt+F
 Surround With... : Ctrl+Alt+T
 Method... : Ctrl+Alt+M
+Ctrl+/：添加注释//；Ctrl+Shift+/：添加注释/**/；
+Ctrl+F：快速搜索；
+Ctrl+L：跳到某行；
+Ctrl+Alt+V：new对象后补齐等号前面
+Ctrl+鼠标左键：进到类或方法
+.cast：强制转换；
+.switch：switch(){}
+
+字体：Settings-Editor-Font
+黑亮：Settings-Editor-Color Scheme
+自动导包：File -->Setting-->Editor-->General-->Auto Import-勾选两项
+GsonFormat,ButterKnife：Settings-Plugins-输入GsonFormat-Install-Restart
+导入module：File-New-Import Module-选择library-修改库下版本-工具栏Sync project-Project Structure-Modules-app-Dependencies-+-Module Dependency
+
+svn,git过滤设置：
+Project下：
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+app下：
+/build
 
 类注释：Settings-Editor-File and Code Templates-Includes-File Header
 /**
@@ -32,3 +88,24 @@ funt为注释的快捷键，当在方法的上方输入cmd时，即可出现注�
  */
 自动导包：Settings-Editor-General-Auto Import-在对应语言下勾选Add unambiguous...
 自动删除无用包：Settings-Editor-General-Auto Import-在对应语言下勾选Optimize imports...
+——————————————————————————————————————————————————
+4.开发工具和电脑软件
+HiJson,取色器,尺子Size，TotalControl,TeamViewer，夜神模拟器
+有道词典，360安全桌面，WPS，360浏览器，微信QQ电脑版，百度网盘，电脑管家
+屏幕常亮：右击-个性化-屏幕保护程序-等待600分钟
+MD5解密：http://www.cmd5.com/
+在线Json转Excel文件：http://www.yzcopen.com/doc/jsonexcel
+在线HTTP POST/GET接口测试工具aTool在线工具：http://www.atool.org/httptest.php
+total control手机助手（电脑手机演示）：http://tc.sigma-rt.com.cn/
+草料二维码：http://cli.im/
+压缩图片体积：https://tinypng.com/
+SQLite可视化工具下载：http://www.sqliteexpert.com/download.html
+Charles 从入门到精通：
+https://www.charlesproxy.com/
+https://blog.devtang.com/2015/11/14/charles-introduction/
+https://zhidao.baidu.com/question/628398954313488764.html
+TotalControl
+32 位 MD5 校验值:
+9A646C2A1C611069B4BF7E4CD25FF149
+64 位 MD5 校验值:
+448EE300A42D021260EC97B671CC99C2

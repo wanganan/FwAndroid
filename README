@@ -827,7 +827,7 @@ val userRepository: UserRepository = applicationGraph.repository()
 val userRepository2: UserRepository = applicationGraph.repository()
 // Dagger 在每次收到请求时都会创建 UserRepository 的新实例。
 assert(userRepository != userRepository2)
-作用域限定：
+一：作用域限定：
 //@Singleton 是 javax.inject 软件包随附的唯一一个作用域注释。
 //使用构造函数注入（通过 @Inject）时，应在类中添加作用域注释；使用 Dagger 模块时，应在 @Provides 方法中添加作用域注释。
 //仅在必要时使用作用域限定。过度使用作用域限定可能会对应用的运行时性能产生负面影响：只要组件在内存中，对象就会在内存中；获取限定作用域的对象的成本更高。
@@ -873,7 +873,7 @@ kotlin中:
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 annotation class ActivityScoped
-字段注入：
+二：字段注入：
 注入的字段不能为私有字段。这些字段的公开范围必须至少为软件包私有。字段注入只能在无法使用构造函数注入的 Android 框架类中使用。
 在kotlin中，声明的变量默认是私有的，这就需要我们单独处理一下，比如添加lateinit关键字或者添加@JvmField注解。
 class LoginActivity: Activity() {
@@ -902,7 +902,7 @@ class LoginActivity: Activity() {
         super.onCreate(savedInstanceState)
     }
 }
-Dagger 模块：
+三：Dagger 模块：
 模块是一种以语义方式封装有关如何提供对象信息的方法。
 除了 @Inject 注释之外，还有一种方法可告知 Dagger 如何提供类实例，即使用 Dagger 模块中的信息。
 Dagger 模块是一个带有 @Module 注释的类。您可以在其中使用 @Provides 注释定义依赖项。@Provides 方法的依赖项是该方法的参数。
@@ -923,7 +923,7 @@ class NetworkModule {
 interface ApplicationComponent {
     ...
 }
-Dagger 子组件(继承并扩展)：
+四：Dagger 子组件(继承并扩展)：
 除了将对象作用域限定为不同的生命周期之外，创建子组件是分别封装应用的不同部分的良好做法。
 根据应用流程构建应用以创建不同的 Dagger 子图有助于在内存和启动时间方面实现性能和扩容性更强的应用。
 如需告知 Dagger 您希望新组件使用其他组件的一部分，方法是使用 Dagger 子组件。新组件必须是包含共享资源的组件的子组件。
@@ -962,12 +962,7 @@ interface ApplicationComponent {
 fun loginComponent(): LoginComponent.Factory
 }
 4.最后在LoginActivity使用：DaggerApplicationComponent.create().loginComponent().create().inject(this)
-MVP + Dagger2：
-https://github.com/googlesamples/android-architecture
-https://github.com/JessYanCoding/MVPArms
-在MVP框架中，所有的业务逻辑全在Presenter，换句话， presenter 持有的对象，控制着你程序的全部逻辑。
-这在dagger 中，讲白了 我们只要将所有的 presenter 对象控制就可以了。
-Dagger dependencies（依赖关系）：
+五：Dagger dependencies（依赖关系）：
 1.创建父类module
 @Module
 public class FatherModule {
@@ -991,6 +986,76 @@ public interface ChildComponent {
 @Inject lateinit var father : Father
 DaggerChildComponent.builder().fatherComponent(DaggerFatherComponent.create()).build().inject(this)
 father.xxx()
+六：@Binds：
+使用@Inject初始化对象时有一种特殊情况：需要初始化的是接口的实例，这时候需要特殊处理一下，就需要用到@Binds
+@Module
+interface IMainViewModule {
+    @Binds
+    abstract fun provideIMainView(main: IMainViewImpl): IMainView
+}
+这里使用 provideXXX() 方式提供接口实例，说明几点：
+module也必须是抽象的
+方法中必须有参数且只能有一个，是接口的实现类
+实现类必须提供@Inject的构造或 Module中@Provides形式提供
+方法是抽象方法，不必写方法体
+使用@Binds代替@Provides
+由于方法是抽象的，所以类也要抽象或接口
+class IMainViewImpl @Inject constructor() : IMainView
+七：@Qualifier：
+解决依赖注入相同对象实例
+如果Module中有@Provides标注的多个方法同事提供同一类型的依赖，IDE编译时在会报错，因为Dagger2不知道该用哪个方法提供的依赖。
+1.定义限定符注解
+@Qualifier
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+annotation class Animal(val name: String)
+2.Module 中使用
+@Provides
+@Animal("dog")
+@Singleton
+fun providesAnimal(): Dog {
+    return Dog()
+}
+@Provides
+@Animal("dog2")
+@Singleton
+fun providesAnimal2(): Dog {
+    return Dog()
+}
+3.实例化
+@Inject
+@Animal("dog")
+lateinit var dog: Dog
+@Inject
+@Animal("dog2")
+lateinit var dog2: Dog
+八：@Named：
+同样也是解决依赖注入相同对象实例
+1.Module 中使用
+@Provides
+@Named("dog")
+@Singleton
+fun providesAnimal(): Dog {
+    return Dog()
+}
+@Provides
+@Named("dog2")
+@Singleton
+fun providesAnimal2(): Dog {
+    return Dog()
+}
+2.实例化
+@Inject
+@Named("dog")
+lateinit var dog: Dog
+@Inject
+@Named("dog2")
+lateinit var dog2: Dog
+九：MVP + Dagger2：
+https://github.com/googlesamples/android-architecture
+https://github.com/JessYanCoding/MVPArms
+在MVP框架中，所有的业务逻辑全在Presenter，换句话， presenter 持有的对象，控制着你程序的全部逻辑。
+这在dagger 中，讲白了 我们只要将所有的 presenter 对象控制就可以了。
 ------------------总结------------------
 理念：模块拆分重用。
 概念：
@@ -998,6 +1063,9 @@ father.xxx()
 @Module   Module和Provides是为解决第三方类库而生的。
 @Component  它是一个桥梁，一端是目标类，另一端是目标类所依赖类的实例。
 @Subcomponent 子组件标识，被标识的组件可以直接继承使用父组件的类实例。
+@Binds 初始化接口实例。
+@Qualifier 自定义注解，解决依赖注入同一对象实例问题。
+@Named 解决依赖注入同一对象实例问题。
 includes module间互相依赖。
 dependencies component间互相依赖。
 scope 自定义注释，实现单例用。
@@ -1018,7 +1086,7 @@ inject(Activity act) 放父类是要小心，不能使用会被继承的变量�
 component 和其依赖的 component 之间的 Scoped 不能相同。
 子类 component 依赖父类的 component ，子类 component 的Scoped 要小于父类的Scoped。
 @Singleton 的 @Component 只能被依赖而不能依赖任何 @Component。建议Singleton的级别是Application。
-不同的 Module 不能提供相同的对象实例。
+不同的 Module 不能提供相同的对象实例，但使用 @Qualifier 和 @Named 可解决这一问题。
 Module 中使用了自定义的 Scoped，那么对应的 component 也使用同样的Scoped。
 ------------------注意------------------
 ——————————————————————————————————————————————————

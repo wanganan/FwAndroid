@@ -8,7 +8,7 @@ import dagger.Subcomponent
  * @date 2020/7/24
  * GitHub：https://github.com/wanganan
  * email：waa182838@sina.com
- * description：fragment基类组件
+ * description：fragment基类组件。要求 BaseFragment 的子类 Component 依赖。
  * version: 1.0
  */
 @Subcomponent(modules = [FragmentModule::class])

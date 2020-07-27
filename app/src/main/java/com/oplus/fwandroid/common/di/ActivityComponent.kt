@@ -8,7 +8,7 @@ import dagger.Subcomponent
  * @date 2020/7/23
  * GitHub：https://github.com/wanganan
  * email：waa182838@sina.com
- * description：activity基类组件
+ * description：activity基类组件。要求 BaseActivity 的子类 Component 依赖。
  * version: 1.0
  */
 
@@ -37,6 +37,7 @@ import dagger.Subcomponent
  *
  * 依赖dependencies（依赖关系）
  * 依赖dependencies的组件可使用直接上级暴露出来的类实例。
+ * dependencies方式让Component之间更加独立，结构更加清晰，也更利于解耦。有助于实现组件化开发，不像Subcomponent一样每次继承都需要在父组件添加。
  * 如果要依赖于上级组件，需要dependencies修饰。并且作用域不能超过上级。使用方法(fatherComponent需要编译生成)：
  * FatherComponent fatherComponent = DaggerFatherComponent.create();
  * DaggerChildComponent.builder().fatherComponent(fatherComponent).build().inject(this);
